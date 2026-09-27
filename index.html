@@ -1,0 +1,1402 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Julius Webdesign – Websites aus Norden für lokale Unternehmen</title>
+  <meta name="description" content="Moderne, schnelle Websites für kleine und lokale Unternehmen in Norden, Ostfriesland und ganz Deutschland. Persönliche Betreuung von der ersten Idee bis zum Launch." />
+  <meta name="theme-color" content="#0b0c0f" />
+
+  <!-- Font: nur Inter in 2 Schnitten (400/600), per preconnect + display=swap performance-optimiert -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+
+  <style>
+    /* =========================================================
+       DESIGN TOKENS – hier Farben, Abstände & Radien anpassen
+       ========================================================= */
+    :root {
+      /* Farben */
+      --bg: #0b0c0f;
+      --bg-elevated: #121418;
+      --surface: #16191e;
+      --border: rgba(255, 255, 255, 0.08);
+      --border-strong: rgba(255, 255, 255, 0.14);
+      --text: #f2f1ee;
+      --text-muted: #9a9ca3;
+      --text-dim: #6b6e76;
+      --accent: #8f8cff;            /* Akzentfarbe */
+      --accent-strong: #a9a6ff;
+      --accent-2: #7fd3ff;          /* zweiter Ton für Verläufe */
+      --accent-soft: rgba(143, 140, 255, 0.14);
+      --accent-contrast: #0b0c0f;   /* Textfarbe auf Akzent-Buttons */
+
+      /* Typografie */
+      --font: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      --fs-hero: clamp(2.5rem, 7vw + 0.5rem, 5.25rem);
+      --fs-h2: clamp(1.9rem, 3.5vw + 0.8rem, 3.25rem);
+      --fs-h3: 1.25rem;
+      --fs-body: 1rem;
+      --fs-lead: clamp(1.05rem, 0.6vw + 0.95rem, 1.25rem);
+
+      /* Spacing */
+      --space-xs: 0.5rem;
+      --space-sm: 0.75rem;
+      --space-md: 1rem;
+      --space-lg: 1.5rem;
+      --space-xl: 2.5rem;
+      --space-2xl: 4rem;
+      --section-y: clamp(5rem, 10vw, 9rem);
+      --gutter: clamp(1.25rem, 4vw, 2.5rem);
+      --container: 1180px;
+
+      /* Formen & Bewegung */
+      --radius-sm: 10px;
+      --radius: 18px;
+      --radius-lg: 28px;
+      --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+      --dur-reveal: 750ms;
+      --reveal-distance: 26px;
+      --header-h: 72px;
+    }
+
+    /* =========================================================
+       BASE
+       ========================================================= */
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; scroll-padding-top: calc(var(--header-h) + 1rem); }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      font-size: var(--fs-body);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: optimizeLegibility;
+      overflow-x: clip;
+    }
+    img, svg { display: block; max-width: 100%; }
+    a { color: inherit; text-decoration: none; }
+    h1, h2, h3, p { margin: 0; }
+    h1, h2, h3 { font-weight: 600; letter-spacing: -0.025em; line-height: 1.1; }
+    ::selection { background: var(--accent); color: var(--accent-contrast); }
+    :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 6px; }
+
+    .container { width: 100%; max-width: var(--container); margin-inline: auto; padding-inline: var(--gutter); }
+    .section { padding-block: var(--section-y); position: relative; }
+
+    .eyebrow {
+      display: inline-flex; align-items: center; gap: var(--space-xs);
+      font-size: 0.8rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--accent);
+    }
+    .eyebrow::before { content: ""; width: 18px; height: 1px; background: currentColor; opacity: 0.7; }
+
+    .section-head { max-width: 680px; margin-bottom: var(--space-2xl); }
+    .section-head h2 { font-size: var(--fs-h2); margin-top: var(--space-md); }
+    .section-head p { color: var(--text-muted); font-size: var(--fs-lead); margin-top: var(--space-md); }
+
+    /* Logo (inline SVG, Farbe über currentColor steuerbar) */
+    .logo { display: inline-flex; align-items: center; color: var(--text); }
+    .logo svg { height: 30px; width: auto; aspect-ratio: 1354 / 294; fill: currentColor; transition: opacity 250ms; }
+    .logo:hover svg { opacity: 0.8; }
+
+    /* Scroll-Fortschrittsbalken oben */
+    .progress {
+      position: fixed; top: 0; left: 0; right: 0; height: 2px; z-index: 60;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      transform-origin: left; transform: scaleX(0);
+    }
+
+    /* =========================================================
+       BUTTONS – dezente Scale/Shadow-Transition + "magnetischer" Effekt
+       (magnetisch: JS setzt die CSS-Eigenschaft `translate`)
+       ========================================================= */
+    .btn {
+      --btn-bg: var(--accent);
+      --btn-fg: var(--accent-contrast);
+      display: inline-flex; align-items: center; justify-content: center; gap: 0.55rem;
+      padding: 0.9rem 1.5rem;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      background: var(--btn-bg); color: var(--btn-fg);
+      font: 600 0.95rem/1 var(--font);
+      cursor: pointer;
+      transition: transform 300ms var(--ease-out), translate 400ms var(--ease-out), box-shadow 300ms var(--ease-out), background-color 300ms var(--ease-out), border-color 300ms var(--ease-out);
+    }
+    .btn:hover { transform: scale(1.03); box-shadow: 0 10px 30px -10px rgba(143, 140, 255, 0.55); background: var(--accent-strong); }
+    .btn:active { transform: scale(0.99); }
+    .btn svg { width: 16px; height: 16px; transition: transform 300ms var(--ease-out); }
+    .btn:hover svg { transform: translateX(3px); }
+    .btn--ghost { --btn-bg: transparent; --btn-fg: var(--text); border-color: var(--border-strong); }
+    .btn--ghost:hover { background: rgba(255, 255, 255, 0.05); box-shadow: 0 10px 30px -14px rgba(0, 0, 0, 0.8); border-color: rgba(255, 255, 255, 0.25); }
+    .btn--sm { padding: 0.65rem 1.1rem; font-size: 0.875rem; }
+
+    /* =========================================================
+       SCROLL-REVEAL – Basis für alle Einblend-Animationen
+       .reveal / [data-split] bekommen per IntersectionObserver .is-visible.
+       --delay wird in JS für gestaffelte Gruppen gesetzt.
+       ========================================================= */
+    .js .reveal {
+      opacity: 0;
+      transform: translate3d(0, var(--reveal-distance), 0);
+      transition:
+        opacity var(--dur-reveal) var(--ease-out) var(--delay, 0ms),
+        transform var(--dur-reveal) var(--ease-out) var(--delay, 0ms);
+    }
+    .js .reveal.is-visible { opacity: 1; transform: none; }
+
+    /* Wort-für-Wort-Animationen (JS zerlegt Text in .w > .w__i) */
+    .w { display: inline-block; vertical-align: top; }
+    .w__i { display: inline-block; }
+    /* a) "mask": Wörter gleiten aus einer unsichtbaren Maske nach oben (Überschriften) */
+    .js [data-split="mask"] .w { overflow: hidden; padding-bottom: 0.1em; margin-bottom: -0.1em; }
+    .js [data-split="mask"] .w__i {
+      transform: translate3d(0, 105%, 0);
+      transition: transform 900ms var(--ease-out) calc(var(--i) * 45ms);
+    }
+    .js [data-split="mask"].is-visible .w__i { transform: none; }
+    /* b) "blur": Wörter werden aus der Unschärfe scharf (Hero) */
+    .js [data-split="blur"] .w__i {
+      opacity: 0; filter: blur(12px); transform: translate3d(0, 0.35em, 0);
+      transition: opacity 900ms var(--ease-out), filter 900ms var(--ease-out), transform 900ms var(--ease-out);
+      transition-delay: calc(150ms + var(--i) * 70ms);
+    }
+    .js [data-split="blur"].is-visible .w__i { opacity: 1; filter: none; transform: none; }
+
+    /* =========================================================
+       1. HEADER
+       ========================================================= */
+    .header {
+      position: fixed; inset: 0 0 auto 0; z-index: 50;
+      height: var(--header-h);
+      transition: background-color 400ms var(--ease-out), border-color 400ms var(--ease-out), transform 500ms var(--ease-out);
+      border-bottom: 1px solid transparent;
+    }
+    .header.is-scrolled {
+      background: rgba(11, 12, 15, 0.72);
+      backdrop-filter: saturate(160%) blur(16px);
+      -webkit-backdrop-filter: saturate(160%) blur(16px);
+      border-bottom-color: var(--border);
+    }
+    /* Header blendet beim Runterscrollen aus, beim Hochscrollen wieder ein */
+    .header.is-hidden { transform: translateY(-100%); }
+    .header__inner { height: 100%; display: flex; align-items: center; justify-content: space-between; gap: var(--space-lg); }
+
+    .nav { display: none; }
+    .nav ul { list-style: none; margin: 0; padding: 0; display: flex; gap: var(--space-xl); }
+    .nav a { color: var(--text-muted); font-size: 0.925rem; position: relative; transition: color 250ms; }
+    .nav a::after {
+      content: ""; position: absolute; left: 0; right: 0; bottom: -6px; height: 1px;
+      background: var(--text); transform: scaleX(0); transform-origin: left;
+      transition: transform 400ms var(--ease-out);
+    }
+    .nav a:hover, .nav a.is-active { color: var(--text); }
+    .nav a:hover::after, .nav a.is-active::after { transform: scaleX(1); }
+    .header__cta { display: none; }
+
+    /* Mobile Menu Toggle */
+    .menu-toggle {
+      width: 44px; height: 44px; display: grid; place-items: center;
+      background: transparent; border: 1px solid var(--border-strong); border-radius: 12px; color: var(--text); cursor: pointer;
+    }
+    .menu-toggle span, .menu-toggle span::before, .menu-toggle span::after {
+      display: block; width: 18px; height: 1.5px; background: currentColor; border-radius: 2px;
+      transition: transform 350ms var(--ease-out), opacity 200ms;
+      position: relative;
+    }
+    .menu-toggle span::before, .menu-toggle span::after { content: ""; position: absolute; left: 0; }
+    .menu-toggle span::before { top: -6px; }
+    .menu-toggle span::after { top: 6px; }
+    .menu-open .menu-toggle span { background: transparent; }
+    .menu-open .menu-toggle span::before { transform: translateY(6px) rotate(45deg); }
+    .menu-open .menu-toggle span::after { transform: translateY(-6px) rotate(-45deg); }
+
+    .mobile-menu {
+      position: fixed; inset: var(--header-h) 0 0 0; z-index: 40;
+      background: rgba(11, 12, 15, 0.97);
+      backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+      padding: var(--space-xl) var(--gutter);
+      display: flex; flex-direction: column; gap: var(--space-xl);
+      opacity: 0; visibility: hidden;
+      transition: opacity 350ms var(--ease-out), visibility 0s linear 350ms;
+    }
+    .menu-open .mobile-menu { opacity: 1; visibility: visible; transition-delay: 0s; }
+    .mobile-menu ul { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-xs); }
+    .mobile-menu li { opacity: 0; transform: translateY(12px); transition: opacity 500ms var(--ease-out), transform 500ms var(--ease-out); }
+    .menu-open .mobile-menu li { opacity: 1; transform: none; }
+    .menu-open .mobile-menu li:nth-child(2) { transition-delay: 60ms; }
+    .menu-open .mobile-menu li:nth-child(3) { transition-delay: 120ms; }
+    .menu-open .mobile-menu li:nth-child(4) { transition-delay: 180ms; }
+    .mobile-menu a { display: block; font-size: 1.75rem; font-weight: 600; letter-spacing: -0.02em; padding-block: 0.4rem; }
+    body.menu-open { overflow: hidden; }
+    .menu-open .header { transform: none; }
+
+    @media (min-width: 900px) {
+      .nav { display: block; }
+      .header__cta { display: inline-flex; }
+      .menu-toggle, .mobile-menu { display: none; }
+    }
+
+    /* =========================================================
+       2. HERO – Parallax-Hintergrund, Maus-Spotlight, Blur-Headline
+       ========================================================= */
+    .hero {
+      position: relative; min-height: 100svh;
+      display: flex; align-items: center;
+      padding-top: calc(var(--header-h) + var(--space-2xl));
+      padding-bottom: var(--space-2xl);
+      overflow: hidden; isolation: isolate;
+    }
+    .hero__bg { position: absolute; inset: -10% 0 -10% 0; z-index: -1; pointer-events: none; will-change: transform; }
+    .hero__grid {
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(to right, rgba(255,255,255,0.045) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255,255,255,0.045) 1px, transparent 1px);
+      background-size: 64px 64px;
+      mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, #000 30%, transparent 75%);
+      -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, #000 30%, transparent 75%);
+    }
+    .orb { position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.55; }
+    .orb--1 { width: 520px; height: 520px; top: 5%; left: 55%; background: radial-gradient(circle, rgba(143,140,255,0.55), transparent 65%); animation: drift1 22s ease-in-out infinite alternate; }
+    .orb--2 { width: 420px; height: 420px; top: 45%; left: -8%; background: radial-gradient(circle, rgba(94,200,255,0.28), transparent 65%); animation: drift2 26s ease-in-out infinite alternate; }
+    .orb--3 { width: 300px; height: 300px; top: 60%; left: 70%; background: radial-gradient(circle, rgba(255,160,200,0.16), transparent 65%); animation: drift1 30s ease-in-out infinite alternate-reverse; }
+    @keyframes drift1 { to { transform: translate3d(-60px, 40px, 0) scale(1.08); } }
+    @keyframes drift2 { to { transform: translate3d(70px, -30px, 0) scale(1.05); } }
+    /* Spotlight folgt der Maus (--sx/--sy per JS) */
+    .hero::after {
+      content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+      background: radial-gradient(500px circle at var(--sx, 70%) var(--sy, 30%), rgba(143,140,255,0.09), transparent 60%);
+    }
+
+    /* Hero-Inhalt: fadet und schrumpft beim Wegscrollen leicht (per JS) */
+    .hero__content { max-width: 900px; will-change: transform, opacity; }
+    .hero__badge {
+      display: inline-flex; align-items: center; gap: 0.6rem;
+      padding: 0.4rem 0.85rem 0.4rem 0.5rem; border-radius: 999px;
+      border: 1px solid var(--border-strong); background: rgba(255,255,255,0.03);
+      font-size: 0.85rem; color: var(--text-muted);
+    }
+    .hero__badge .dot { width: 8px; height: 8px; border-radius: 50%; background: #5be49b; box-shadow: 0 0 0 4px rgba(91,228,155,0.15); animation: pulse 2.4s ease-in-out infinite; }
+    @keyframes pulse { 50% { box-shadow: 0 0 0 7px rgba(91,228,155,0.05); } }
+    .hero h1 { font-size: var(--fs-hero); margin-top: var(--space-lg); letter-spacing: -0.04em; line-height: 1.04; }
+    .grad, .grad .w__i {
+      background: linear-gradient(100deg, var(--accent-strong) 0%, var(--accent-2) 100%);
+      -webkit-background-clip: text; background-clip: text; color: transparent;
+    }
+    .js .hero h1 .grad { background: none; }
+    .hero__sub { font-size: var(--fs-lead); color: var(--text-muted); max-width: 580px; margin-top: var(--space-lg); }
+    .hero__actions { display: flex; flex-wrap: wrap; gap: var(--space-sm); margin-top: var(--space-xl); }
+    .hero__meta { display: flex; flex-wrap: wrap; gap: var(--space-sm) var(--space-lg); margin-top: var(--space-2xl); color: var(--text-dim); font-size: 0.875rem; }
+    .hero__meta span { display: inline-flex; align-items: center; gap: 0.45rem; }
+    .hero__meta svg { width: 16px; height: 16px; color: var(--accent); }
+
+    .scroll-hint {
+      position: absolute; left: 50%; bottom: 28px; transform: translateX(-50%);
+      width: 24px; height: 38px; border: 1px solid var(--border-strong); border-radius: 999px; display: none;
+    }
+    .scroll-hint::after {
+      content: ""; position: absolute; left: 50%; top: 8px; width: 3px; height: 7px; margin-left: -1.5px;
+      background: var(--text-muted); border-radius: 2px; animation: scrollDot 2.2s var(--ease-out) infinite;
+    }
+    @keyframes scrollDot { 0% { opacity: 0; transform: translateY(0); } 30% { opacity: 1; } 100% { opacity: 0; transform: translateY(12px); } }
+    @media (min-width: 900px) { .scroll-hint { display: block; } }
+
+    /* =========================================================
+       MARQUEE – Endlos-Laufband der Zielbranchen (reines CSS)
+       ========================================================= */
+    .marquee {
+      border-block: 1px solid var(--border); padding-block: 1.25rem; overflow: hidden;
+      mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+      -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+    }
+    .marquee__track { display: flex; width: max-content; animation: marquee 40s linear infinite; }
+    .marquee:hover .marquee__track { animation-play-state: paused; }
+    .marquee__group { display: flex; align-items: center; gap: 2.5rem; padding-right: 2.5rem; }
+    .marquee__group span { font-size: clamp(1rem, 1.5vw + 0.6rem, 1.4rem); font-weight: 600; color: var(--text-dim); white-space: nowrap; letter-spacing: -0.01em; }
+    .marquee__group i { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); opacity: 0.6; flex: none; }
+    @keyframes marquee { to { transform: translate3d(-50%, 0, 0); } }
+
+    /* =========================================================
+       3. LEISTUNGEN – Cards mit Maus-Glow + 3D-Tilt
+       ========================================================= */
+    .cards { display: grid; gap: var(--space-md); grid-template-columns: 1fr; }
+    @media (min-width: 640px) { .cards { grid-template-columns: repeat(2, 1fr); } }
+    @media (min-width: 1080px) { .cards--4 { grid-template-columns: repeat(4, 1fr); } }
+    .tilt-wrap { perspective: 900px; }
+
+    .card {
+      position: relative; height: 100%; padding: var(--space-xl) var(--space-lg);
+      background: linear-gradient(180deg, rgba(255,255,255,0.035), rgba(255,255,255,0.01));
+      border: 1px solid var(--border); border-radius: var(--radius);
+      transition: border-color 400ms var(--ease-out), rotate 600ms var(--ease-out);
+      overflow: hidden;
+    }
+    .card::before {
+      content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0;
+      background: radial-gradient(400px circle at var(--mx, 50%) var(--my, 0%), rgba(143,140,255,0.13), transparent 45%);
+      transition: opacity 400ms var(--ease-out);
+    }
+    .card:hover { border-color: var(--border-strong); }
+    .card:hover::before { opacity: 1; }
+    .card__icon {
+      width: 48px; height: 48px; border-radius: 14px; display: grid; place-items: center;
+      background: var(--accent-soft); color: var(--accent-strong); margin-bottom: var(--space-lg);
+      transition: transform 500ms var(--ease-out);
+    }
+    .card:hover .card__icon { transform: translateY(-3px) rotate(-6deg); }
+    .card__icon svg { width: 22px; height: 22px; }
+    .card h3 { font-size: var(--fs-h3); margin-bottom: var(--space-xs); }
+    .card p { color: var(--text-muted); font-size: 0.95rem; }
+    .card ul { list-style: none; margin: var(--space-lg) 0 0; padding: var(--space-md) 0 0; border-top: 1px solid var(--border); display: grid; gap: 0.4rem; }
+    .card li { font-size: 0.875rem; color: var(--text-muted); display: flex; gap: 0.5rem; align-items: baseline; }
+    .card li::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: var(--accent); flex: none; transform: translateY(-2px); }
+
+    /* =========================================================
+       STATEMENT – Apple-Style: Text leuchtet Wort für Wort beim Scrollen auf
+       Section ist hoch, Inhalt "klebt" (sticky); JS setzt Fortschritt.
+       ========================================================= */
+    .statement { position: relative; height: 240vh; }
+    .statement__sticky { position: sticky; top: 0; height: 100vh; height: 100svh; display: flex; align-items: center; }
+    .statement__text {
+      font-size: clamp(1.75rem, 4.2vw + 0.4rem, 4rem); font-weight: 600; letter-spacing: -0.035em; line-height: 1.15;
+      max-width: 1000px;
+    }
+    .js .statement__text .w__i { opacity: 0.14; transition: opacity 350ms linear, color 350ms linear; }
+    .js .statement__text .w__i.is-lit { opacity: 1; }
+    .statement__text em { font-style: normal; }
+    .js .statement__text em .w__i.is-lit { color: var(--accent-strong); }
+
+    /* =========================================================
+       4. ÜBER MICH + Versprechen-Leiste
+       ========================================================= */
+    .about { display: grid; gap: var(--space-2xl); align-items: center; }
+    @media (min-width: 960px) { .about { grid-template-columns: 0.9fr 1.1fr; gap: 5rem; } }
+    .about__visual {
+      position: relative; aspect-ratio: 4 / 5; border-radius: var(--radius-lg); overflow: hidden;
+      border: 1px solid var(--border);
+      background:
+        radial-gradient(120% 80% at 20% 0%, rgba(143,140,255,0.35), transparent 60%),
+        radial-gradient(90% 70% at 100% 100%, rgba(94,200,255,0.18), transparent 60%),
+        var(--surface);
+      max-width: 460px;
+    }
+    /* Bild-Reveal: Vorhang öffnet sich von unten nach oben */
+    .js .about__visual { clip-path: inset(100% 0 0 0 round var(--radius-lg)); transition: clip-path 1300ms var(--ease-out); }
+    .js .about__visual.is-visible { clip-path: inset(0 0 0 0 round var(--radius-lg)); }
+    .about__visual .placeholder {
+      position: absolute; inset: 0; display: grid; place-items: center; color: var(--text-dim); font-size: 0.85rem; text-align: center; padding: var(--space-lg);
+    }
+    .about__visual .placeholder svg { width: 64px; height: 64px; margin: 0 auto var(--space-sm); opacity: 0.5; }
+    .about__tag {
+      position: absolute; left: var(--space-md); bottom: var(--space-md); right: var(--space-md);
+      padding: var(--space-md); border-radius: var(--radius-sm);
+      background: rgba(11,12,15,0.6); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+      border: 1px solid var(--border); font-size: 0.875rem;
+    }
+    .about__tag strong { display: block; font-weight: 600; }
+    .about__tag span { color: var(--text-muted); }
+    .about__text h2 { font-size: var(--fs-h2); margin-top: var(--space-md); }
+    .about__text p { color: var(--text-muted); font-size: 1.05rem; margin-top: var(--space-lg); }
+    .about__text p strong { color: var(--text); font-weight: 600; }
+
+    .values { display: grid; gap: var(--space-sm); margin-top: var(--space-xl); }
+    .value { display: flex; gap: var(--space-md); align-items: flex-start; }
+    .value svg { width: 20px; height: 20px; flex: none; color: var(--accent); margin-top: 3px; }
+    .value strong { display: block; font-weight: 600; }
+    .value span { color: var(--text-muted); font-size: 0.95rem; }
+
+    /* Versprechen statt Projektzahlen */
+    .promise-head { margin-top: var(--space-2xl); display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: var(--space-sm); }
+    .promise-head h3 { font-size: 1.35rem; }
+    .promise-head p { color: var(--text-muted); font-size: 0.925rem; }
+    .promises {
+      display: grid; grid-template-columns: 1fr; gap: 1px;
+      margin-top: var(--space-lg); border-radius: var(--radius); overflow: hidden;
+      background: var(--border); border: 1px solid var(--border);
+    }
+    @media (min-width: 560px) { .promises { grid-template-columns: repeat(2, 1fr); } }
+    @media (min-width: 1000px) { .promises { grid-template-columns: repeat(4, 1fr); } }
+    .promise { background: var(--bg); padding: var(--space-lg); position: relative; overflow: hidden; }
+    .promise::after {
+      content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 2px;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      transform: scaleX(0); transform-origin: left; transition: transform 1000ms var(--ease-out) calc(var(--delay, 0ms) + 300ms);
+    }
+    .promise.is-visible::after { transform: scaleX(1); }
+    .promise__num { font-size: clamp(1.9rem, 3vw + 0.8rem, 2.6rem); font-weight: 600; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; line-height: 1; }
+    .promise__num .suffix { color: var(--accent); }
+    .promise strong { display: block; margin-top: var(--space-sm); font-weight: 600; font-size: 0.975rem; }
+    .promise .desc { display: block; color: var(--text-muted); font-size: 0.85rem; margin-top: 0.2rem; }
+
+    /* =========================================================
+       5. REFERENZEN – Apple-Style Showcase
+       Browserfenster "klebt", kippt sich auf und wächst beim Scrollen,
+       danach scrollt die Website darin durch.
+       ========================================================= */
+    .showcase { position: relative; height: 320vh; }
+    @media (max-width: 700px) { .showcase { height: 260vh; } }
+    .showcase__sticky {
+      position: sticky; top: 0; height: 100vh; height: 100svh;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: var(--space-lg); padding: calc(var(--header-h) * 0.6) var(--gutter) var(--space-lg);
+      overflow: hidden;
+    }
+    .device {
+      /* Breite richtet sich auch nach der Viewport-Höhe, damit das Fenster immer ganz sichtbar ist */
+      width: min(1100px, 100%, calc((100svh - 15rem) * 1.6));
+      border-radius: 18px; overflow: hidden;
+      background: #0f1115; border: 1px solid var(--border-strong);
+      box-shadow: 0 60px 120px -40px rgba(0,0,0,0.9), 0 0 0 1px rgba(255,255,255,0.03);
+      transform-origin: 50% 40%;
+      will-change: transform;
+    }
+    .device__bar { display: flex; align-items: center; gap: 6px; padding: 10px 14px; border-bottom: 1px solid var(--border); background: #14171c; }
+    .device__bar i { width: 10px; height: 10px; border-radius: 50%; flex: none; }
+    .device__bar i:nth-child(1) { background: #ff5f57; } .device__bar i:nth-child(2) { background: #febc2e; } .device__bar i:nth-child(3) { background: #28c840; }
+    .device__url {
+      margin-inline: auto; font-size: 0.75rem; color: var(--text-muted);
+      padding: 0.25rem 0.9rem; border-radius: 6px; background: rgba(255,255,255,0.05);
+      display: inline-flex; align-items: center; gap: 0.4rem;
+    }
+    .device__url svg { width: 11px; height: 11px; }
+    .device__screen { position: relative; aspect-ratio: 16 / 10; overflow: hidden; background: #f6f5f2; }
+    .device__page { position: absolute; left: 0; right: 0; top: 0; will-change: transform; }
+    .device__page img { width: 100%; height: auto; }
+    /* Fallback-Mockup, falls noch kein Screenshot (assets/svarle.jpg) vorliegt */
+    .device__page img + .mock-page { display: none; }
+    .mock-page { background: #f6f5f2; color: #111; font-family: var(--font); }
+    .mock-page__nav { display: flex; justify-content: space-between; align-items: center; padding: 3% 5%; font-weight: 600; font-size: clamp(0.7rem, 1.4vw, 1.1rem); }
+    .mock-page__nav span { display: flex; gap: 1.2em; font-weight: 400; opacity: 0.55; font-size: 0.8em; }
+    .mock-page__nav em { font-style: normal; }
+    .mock-page__hero { padding: 8% 5% 10%; }
+    .mock-page__hero b { display: block; font-size: clamp(1.4rem, 5vw, 4rem); letter-spacing: -0.04em; line-height: 1; }
+    .mock-page__hero small { display: block; margin-top: 1.2em; opacity: 0.55; font-size: clamp(0.6rem, 1.1vw, 0.95rem); max-width: 55%; }
+    .mock-page__img { margin: 0 5%; aspect-ratio: 16 / 7; border-radius: 1.2vw; background: linear-gradient(135deg, #d8d4cb, #b9b3a6); }
+    .mock-page__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3%; padding: 8% 5%; }
+    .mock-page__grid div { aspect-ratio: 3 / 4; border-radius: 1vw; background: #e6e2da; }
+    .mock-page__band { margin: 0 5% 8%; padding: 8% 5%; border-radius: 1.2vw; background: #111; color: #f6f5f2; font-size: clamp(0.9rem, 2.4vw, 2rem); font-weight: 600; letter-spacing: -0.03em; }
+    .mock-page__foot { padding: 5%; opacity: 0.45; font-size: clamp(0.55rem, 1vw, 0.85rem); border-top: 1px solid rgba(0,0,0,0.08); }
+
+    .showcase__caption {
+      width: min(1100px, 100%); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-md);
+      opacity: 0; transform: translateY(16px); transition: opacity 600ms var(--ease-out), transform 600ms var(--ease-out);
+    }
+    .showcase__caption.is-shown { opacity: 1; transform: none; }
+    .showcase__caption h3 { font-size: clamp(1.25rem, 1.5vw + 0.8rem, 1.75rem); }
+    .showcase__caption p { color: var(--text-muted); font-size: 0.925rem; margin-top: 0.2rem; }
+    .tags { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-top: var(--space-sm); }
+    .tag { font-size: 0.75rem; color: var(--text-muted); padding: 0.25rem 0.6rem; border: 1px solid var(--border); border-radius: 999px; }
+
+    /* Nächstes Projekt – CTA-Karte */
+    .next-project {
+      padding: clamp(1.5rem, 4vw, 3rem); border-radius: var(--radius-lg);
+      border: 1px dashed var(--border-strong);
+      display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-lg);
+      background: radial-gradient(70% 140% at 0% 0%, rgba(143,140,255,0.12), transparent 60%);
+    }
+    .next-project h3 { font-size: clamp(1.25rem, 1.5vw + 0.8rem, 1.75rem); }
+    .next-project p { color: var(--text-muted); margin-top: 0.35rem; max-width: 520px; }
+
+    /* =========================================================
+       6. PROZESS – Fortschrittslinie wächst beim Scrollen mit
+       ========================================================= */
+    .process { background: var(--bg-elevated); border-block: 1px solid var(--border); }
+    .steps { display: grid; gap: var(--space-xl); grid-template-columns: 1fr; list-style: none; margin: 0; padding: 0 0 0 2.25rem; position: relative; }
+    /* Linie: vertikal (mobil) bzw. horizontal (Desktop); --line = 0..1 per JS */
+    .steps::before, .steps::after { content: ""; position: absolute; left: 6px; top: 6px; bottom: 6px; width: 1px; background: var(--border-strong); }
+    .steps::after { background: linear-gradient(180deg, var(--accent), var(--accent-2)); transform-origin: top; transform: scaleY(var(--line, 0)); }
+    .step { position: relative; }
+    .step__dot {
+      position: absolute; left: -2.25rem; top: 4px; width: 13px; height: 13px; border-radius: 50%;
+      background: var(--bg-elevated); border: 1px solid var(--border-strong); transition: background-color 400ms, border-color 400ms, box-shadow 400ms;
+    }
+    .step.is-active .step__dot { background: var(--accent); border-color: var(--accent); box-shadow: 0 0 0 5px var(--accent-soft); }
+    @media (min-width: 1000px) {
+      .steps { grid-template-columns: repeat(4, 1fr); gap: var(--space-lg); padding: 2.25rem 0 0; }
+      .steps::before, .steps::after { left: 6px; right: 6px; top: 6px; bottom: auto; width: auto; height: 1px; }
+      .steps::after { transform-origin: left; transform: scaleX(var(--line, 0)); background: linear-gradient(90deg, var(--accent), var(--accent-2)); }
+      .step__dot { left: 0; top: -2.25rem; }
+    }
+    .step__num { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.1em; color: var(--accent); }
+    .step h3 { font-size: 1.35rem; margin-top: var(--space-xs); }
+    .step p { color: var(--text-muted); font-size: 0.95rem; margin-top: var(--space-xs); }
+    .step__time { display: inline-block; margin-top: var(--space-md); font-size: 0.8rem; color: var(--text-dim); }
+
+    .cta-band {
+      margin-top: var(--space-2xl); padding: clamp(1.75rem, 4vw, 3rem); border-radius: var(--radius-lg);
+      border: 1px solid var(--border);
+      background: radial-gradient(80% 140% at 100% 0%, rgba(143,140,255,0.22), transparent 60%), var(--surface);
+      display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-lg);
+    }
+    .cta-band h3 { font-size: clamp(1.35rem, 2vw + 0.8rem, 1.9rem); max-width: 560px; }
+
+    /* =========================================================
+       7. KONTAKT – Formular (nur UI)
+       ========================================================= */
+    .contact { display: grid; gap: var(--space-2xl); }
+    @media (min-width: 960px) { .contact { grid-template-columns: 0.85fr 1.15fr; gap: 5rem; } }
+    .contact__info h2 { font-size: var(--fs-h2); margin-top: var(--space-md); }
+    .contact__info > p { color: var(--text-muted); font-size: var(--fs-lead); margin-top: var(--space-md); }
+    .contact__list { list-style: none; padding: 0; margin: var(--space-xl) 0 0; display: grid; gap: var(--space-md); }
+    .contact__list a, .contact__list div { display: flex; align-items: center; gap: var(--space-md); color: var(--text); }
+    .contact__list .ic {
+      width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; flex: none;
+      border: 1px solid var(--border); background: rgba(255,255,255,0.02); color: var(--accent-strong);
+      transition: border-color 300ms, transform 400ms var(--ease-out);
+    }
+    .contact__list svg { width: 18px; height: 18px; }
+    .contact__list small { display: block; color: var(--text-muted); font-size: 0.8rem; }
+    .contact__list a:hover .ic { border-color: var(--border-strong); transform: scale(1.06); }
+
+    .form {
+      padding: clamp(1.5rem, 3vw, 2.5rem); border-radius: var(--radius-lg);
+      background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.015));
+      border: 1px solid var(--border);
+      display: grid; gap: var(--space-md);
+    }
+    .form__row { display: grid; gap: var(--space-md); }
+    @media (min-width: 600px) { .form__row { grid-template-columns: 1fr 1fr; } }
+    .field { display: grid; gap: 0.45rem; }
+    .field label, .field .label { font-size: 0.85rem; color: var(--text-muted); }
+    .field input, .field select, .field textarea {
+      width: 100%; padding: 0.85rem 1rem; border-radius: var(--radius-sm);
+      background: rgba(11,12,15,0.6); border: 1px solid var(--border-strong); color: var(--text);
+      font: 400 0.975rem/1.4 var(--font);
+      transition: border-color 250ms, box-shadow 250ms, background-color 250ms;
+      appearance: none; -webkit-appearance: none;
+    }
+    .field textarea { min-height: 140px; resize: vertical; }
+    .field select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239a9ca3' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 0.9rem center; background-size: 16px; padding-right: 2.5rem;
+    }
+    .field select option { background: var(--bg-elevated); }
+    .field input::placeholder, .field textarea::placeholder { color: var(--text-dim); }
+    .field input:focus, .field select:focus, .field textarea:focus {
+      outline: none; border-color: var(--accent); box-shadow: 0 0 0 4px var(--accent-soft); background: rgba(11,12,15,0.85);
+    }
+    .chips { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .chip { position: relative; }
+    .chip input { position: absolute; inset: 0; opacity: 0; pointer-events: none; }
+    .chip span {
+      display: inline-block; padding: 0.5rem 0.9rem; border-radius: 999px; border: 1px solid var(--border-strong);
+      font-size: 0.875rem; color: var(--text-muted); cursor: pointer; transition: all 250ms var(--ease-out);
+    }
+    .chip span:hover { color: var(--text); border-color: rgba(255,255,255,0.25); }
+    .chip input:checked + span { background: var(--accent-soft); border-color: var(--accent); color: var(--text); }
+    .chip input:focus-visible + span { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .form__consent { display: flex; gap: 0.6rem; align-items: flex-start; font-size: 0.825rem; color: var(--text-muted); }
+    .form__consent input { margin-top: 0.25rem; accent-color: var(--accent); }
+    .form__consent a { text-decoration: underline; text-underline-offset: 2px; }
+    .form__footer { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-md); margin-top: var(--space-xs); }
+    .form__note { font-size: 0.8rem; color: var(--text-dim); }
+    .form__success {
+      display: none; align-items: center; gap: 0.6rem; padding: 0.9rem 1rem; border-radius: var(--radius-sm);
+      background: rgba(91,228,155,0.08); border: 1px solid rgba(91,228,155,0.3); color: #aef3cb; font-size: 0.925rem;
+    }
+    .form__success.is-shown { display: flex; animation: fadeUp 500ms var(--ease-out); }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+    /* =========================================================
+       8. FOOTER – mit großem Logo, das beim Scrollen aufsteigt
+       ========================================================= */
+    .footer { border-top: 1px solid var(--border); padding-block: var(--space-2xl) var(--space-xl); overflow: hidden; }
+    .footer__top { display: grid; gap: var(--space-xl); }
+    @media (min-width: 800px) { .footer__top { grid-template-columns: 1.4fr 1fr 1fr; } }
+    .footer__brand p { color: var(--text-muted); font-size: 0.925rem; margin-top: var(--space-md); max-width: 320px; }
+    .footer h4 { margin: 0 0 var(--space-md); font-size: 0.8rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-dim); }
+    .footer ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.55rem; }
+    .footer ul a, .footer ul span { color: var(--text-muted); font-size: 0.925rem; transition: color 250ms; }
+    .footer ul a:hover { color: var(--text); }
+    .socials { display: flex; gap: var(--space-xs); margin-top: var(--space-lg); }
+    .socials a {
+      width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center;
+      border: 1px solid var(--border-strong); color: var(--text-muted);
+      transition: color 300ms, border-color 300ms, transform 300ms var(--ease-out), background-color 300ms;
+    }
+    .socials a:hover { color: var(--text); border-color: rgba(255,255,255,0.3); transform: translateY(-2px); background: rgba(255,255,255,0.04); }
+    .socials svg { width: 17px; height: 17px; }
+    .footer__giant { margin-top: var(--space-2xl); color: rgba(255,255,255,0.06); }
+    .footer__giant svg { width: 100%; height: auto; fill: currentColor; }
+    .js .footer__giant { transform: translateY(40%); opacity: 0; transition: transform 1400ms var(--ease-out), opacity 1400ms var(--ease-out); }
+    .js .footer__giant.is-visible { transform: none; opacity: 1; }
+    .footer__bottom {
+      display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--space-md);
+      margin-top: var(--space-xl); padding-top: var(--space-lg); border-top: 1px solid var(--border);
+      color: var(--text-dim); font-size: 0.825rem;
+    }
+    .footer__bottom nav { display: flex; gap: var(--space-lg); }
+    .footer__bottom a:hover { color: var(--text); }
+
+    /* =========================================================
+       Reduced Motion – respektiert Systemeinstellung
+       ========================================================= */
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; transition-delay: 0ms !important; }
+      .js .reveal, .js .footer__giant { opacity: 1; transform: none; }
+      .js [data-split] .w__i { opacity: 1 !important; filter: none; transform: none; }
+      .js .about__visual { clip-path: none; }
+      .statement, .showcase { height: auto; }
+      .statement__sticky, .showcase__sticky { position: relative; height: auto; padding-block: var(--section-y); }
+      .showcase__caption { opacity: 1; transform: none; }
+    }
+  </style>
+
+  <!-- Markiert JS-Verfügbarkeit, bevor gerendert wird: ohne JS bleibt alles sichtbar -->
+  <script>document.documentElement.classList.add('js');</script>
+</head>
+
+<body>
+
+  <!-- LOGO als wiederverwendbares SVG-Symbol (Farbe = currentColor), genutzt in Header & Footer -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="logo-mark" viewBox="0 0 1354 294">
+      <path fill-rule="evenodd" d="M915 293L846 294L846 277L846 260L898 260L951 260L951 250L951 241L899 241L846 241L846 198L846 155L915 155L984 155L984 172L984 188L932 188L879 188L879 198L879 208L932 208L984 208L984 250L984 293L915 293ZM1354 294L1354 294L1337 293L1321 293L1321 282L1321 270L1312 264L1304 258L1281 242L1258 226L1254 223L1249 220L1249 256L1249 293L1232 293L1216 293L1216 224L1216 155L1233 155L1249 154L1249 166L1249 178L1266 190L1284 202L1302 215L1320 228L1321 192L1321 155L1338 155L1354 155L1354 224L1354 294L1354 294ZM96 293L0 293L0 224L0 155L17 155L34 155L34 208L34 260L56 260L79 260L79 208L79 155L96 155L113 155L113 208L113 260L136 260L158 260L158 208L158 155L175 155L192 155L192 224L192 293L96 293ZM281 293L212 293L212 224L212 155L281 155L350 155L350 172L350 188L298 188L245 188L245 198L245 208L298 208L350 208L350 224L350 241L298 241L245 241L245 250L245 260L298 260L350 260L350 276L350 293L281 293ZM440 293L370 293L370 224L370 155L440 155L509 155L509 224L509 293L440 293ZM598 293L529 293L529 250L529 207L546 207L562 207L562 234L562 260L598 260L634 260L634 224L634 188L582 188L529 188L529 172L529 155L598 155L667 155L667 224L667 293L598 293ZM756 293L687 293L687 224L687 154L756 155L826 155L826 172L826 188L773 188L720 188L720 198L720 208L773 208L826 208L826 224L826 241L773 241L720 241L720 250L720 260L773 260L826 260L826 276L826 293L756 293ZM1020 293L1004 293L1004 245L1004 197L1020 197L1037 197L1037 245L1037 293L1020 293ZM1126 293L1057 293L1057 224L1057 155L1126 155L1196 155L1196 171L1196 188L1143 188L1090 188L1090 224L1090 260L1126 260L1162 260L1162 250L1162 242L1149 241L1136 241L1136 224L1136 208L1166 208L1196 208L1196 250L1196 293L1126 293ZM439 260L475 260L475 250L475 241L439 241L403 241L403 250L403 260L439 260ZM439 208L475 208L475 198L475 188L439 188L403 188L403 198L403 208L439 208ZM1020 188L1004 188L1004 172L1004 155L1020 155L1037 155L1037 172L1037 188L1020 188ZM492 138L423 138L423 69L423 0L440 0L456 0L456 52L456 105L492 105L528 105L528 52L528 0L545 0L562 0L562 69L562 138L492 138ZM333 138L264 138L264 109L264 80L281 79L298 79L298 92L298 105L334 105L370 105L370 52L370 0L386 0L403 0L403 69L403 138L333 138ZM650 138L581 138L581 69L581 0L598 0L615 0L615 52L615 105L668 105L720 105L720 122L720 138L650 138ZM756 138L740 138L740 90L740 42L756 42L773 42L773 90L773 138L756 138ZM862 138L793 138L793 69L793 0L810 0L826 0L826 52L826 105L862 105L898 105L898 52L898 0L915 0L932 0L932 69L932 138L862 138ZM1021 138L952 138L952 122L952 105L1004 105L1057 105L1057 96L1057 86L1004 86L952 86L952 43L952 0L1021 -0L1090 -0L1090 16L1090 33L1037 33L985 33L985 43L985 53L1038 53L1090 53L1090 96L1090 138L1021 138ZM756 33L740 33L740 16L740 0L756 0L773 0L773 16L773 33L756 33Z"/>
+    </symbol>
+  </svg>
+
+  <div class="progress" id="progress" aria-hidden="true"></div>
+
+  <!-- ===================== 1. HEADER ===================== -->
+  <header class="header" id="header">
+    <div class="container header__inner">
+      <a href="#top" class="logo" aria-label="Julius Webdesign – Startseite">
+        <svg viewBox="0 0 1354 294" aria-hidden="true"><use href="#logo-mark" /></svg>
+      </a>
+
+      <nav class="nav" aria-label="Hauptnavigation">
+        <ul>
+          <li><a href="#leistungen">Leistungen</a></li>
+          <li><a href="#referenzen">Referenzen</a></li>
+          <li><a href="#ueber-mich">Über mich</a></li>
+          <li><a href="#kontakt">Kontakt</a></li>
+        </ul>
+      </nav>
+
+      <a href="#kontakt" class="btn btn--sm header__cta" data-magnetic>Projekt anfragen</a>
+
+      <button class="menu-toggle" id="menuToggle" aria-label="Menü öffnen" aria-expanded="false" aria-controls="mobileMenu">
+        <span></span>
+      </button>
+    </div>
+  </header>
+
+  <div class="mobile-menu" id="mobileMenu">
+    <ul>
+      <li><a href="#leistungen">Leistungen</a></li>
+      <li><a href="#referenzen">Referenzen</a></li>
+      <li><a href="#ueber-mich">Über mich</a></li>
+      <li><a href="#kontakt">Kontakt</a></li>
+    </ul>
+    <a href="#kontakt" class="btn">Projekt anfragen</a>
+  </div>
+
+  <main id="top">
+
+    <!-- ===================== 2. HERO ===================== -->
+    <section class="hero" id="hero" aria-labelledby="hero-title">
+      <!-- Parallax-Ebene: wird per JS langsamer als der Scroll bewegt -->
+      <div class="hero__bg" data-parallax="0.35" aria-hidden="true">
+        <div class="hero__grid"></div>
+        <div class="orb orb--1"></div>
+        <div class="orb orb--2"></div>
+        <div class="orb orb--3"></div>
+      </div>
+
+      <div class="container">
+        <div class="hero__content" id="heroContent">
+          <div class="hero__badge reveal"><span class="dot"></span> Aktuell freie Kapazitäten für neue Projekte</div>
+          <h1 id="hero-title" data-split="blur">
+            Websites, die Ihr Unternehmen <span class="grad">so gut aussehen lassen, wie es ist.</span>
+          </h1>
+          <p class="hero__sub reveal" style="--delay:700ms">
+            Ich gestalte und entwickle moderne, schnelle Websites für lokale Unternehmen – damit Sie online gefunden werden und aus Besuchern echte Kunden werden.
+          </p>
+          <div class="hero__actions reveal" style="--delay:820ms">
+            <a href="#kontakt" class="btn" data-magnetic>
+              Kostenloses Erstgespräch
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </a>
+            <a href="#referenzen" class="btn btn--ghost" data-magnetic>Projekte ansehen</a>
+          </div>
+          <div class="hero__meta reveal" style="--delay:940ms">
+            <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Festpreis statt Stundenzettel</span>
+            <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Online in 3–5 Wochen</span>
+            <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Aus Norden – für Ostfriesland &amp; ganz Deutschland</span>
+          </div>
+        </div>
+      </div>
+      <div class="scroll-hint" aria-hidden="true"></div>
+    </section>
+
+    <!-- Laufband: Branchen (Inhalt doppelt für nahtlose Schleife) -->
+    <div class="marquee" aria-hidden="true">
+      <div class="marquee__track">
+        <div class="marquee__group">
+          <span>Handwerk</span><i></i><span>Gastronomie</span><i></i><span>Fitness &amp; Sport</span><i></i><span>Praxen &amp; Therapie</span><i></i><span>Einzelhandel</span><i></i><span>Beauty &amp; Friseur</span><i></i><span>Tourismus &amp; Ferienwohnungen</span><i></i><span>Dienstleister</span><i></i>
+        </div>
+        <div class="marquee__group">
+          <span>Handwerk</span><i></i><span>Gastronomie</span><i></i><span>Fitness &amp; Sport</span><i></i><span>Praxen &amp; Therapie</span><i></i><span>Einzelhandel</span><i></i><span>Beauty &amp; Friseur</span><i></i><span>Tourismus &amp; Ferienwohnungen</span><i></i><span>Dienstleister</span><i></i>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================== 3. LEISTUNGEN ===================== -->
+    <section class="section" id="leistungen" aria-labelledby="leistungen-title">
+      <div class="container">
+        <div class="section-head">
+          <span class="eyebrow reveal">Leistungen</span>
+          <h2 id="leistungen-title" data-split="mask">Alles, was Ihr Auftritt im Netz braucht.</h2>
+          <p class="reveal">Keine Baukasten-Lösung, sondern eine Website, die zu Ihnen passt – durchdacht, schnell und einfach zu pflegen.</p>
+        </div>
+
+        <!-- data-stagger: Kinder mit .reveal werden gestaffelt eingeblendet; data-tilt: 3D-Neigung bei Hover -->
+        <div class="cards cards--4" data-stagger>
+          <div class="tilt-wrap reveal"><article class="card" data-tilt>
+            <div class="card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M7 6.5h.01M10 6.5h.01"/></svg></div>
+            <h3>Websites</h3>
+            <p>Ihr kompletter Auftritt – vom ersten Eindruck bis zur Kontaktaufnahme. Individuell gestaltet, mobil optimiert und bei Google sichtbar.</p>
+            <ul><li>Individuelles Design</li><li>SEO-Grundlagen inklusive</li><li>Selbst pflegbar</li></ul>
+          </article></div>
+          <div class="tilt-wrap reveal"><article class="card" data-tilt>
+            <div class="card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v4M12 17v4M3 12h4M17 12h4"/><circle cx="12" cy="12" r="4"/></svg></div>
+            <h3>Landingpages</h3>
+            <p>Eine fokussierte Seite für ein Angebot, eine Aktion oder eine Kampagne – gebaut, um aus Klicks Anfragen zu machen.</p>
+            <ul><li>Klarer Fokus auf Conversion</li><li>Ideal für Werbeanzeigen</li><li>Schnell umgesetzt</li></ul>
+          </article></div>
+          <div class="tilt-wrap reveal"><article class="card" data-tilt>
+            <div class="card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg></div>
+            <h3>Redesign</h3>
+            <p>Ihre bestehende Website wirkt veraltet oder ist langsam? Ich bringe sie auf den aktuellen Stand – optisch wie technisch.</p>
+            <ul><li>Analyse der Ist-Situation</li><li>Moderne Optik &amp; Technik</li><li>Inhalte bleiben erhalten</li></ul>
+          </article></div>
+          <div class="tilt-wrap reveal"><article class="card" data-tilt>
+            <div class="card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg></div>
+            <h3>Wartung &amp; Support</h3>
+            <p>Updates, Backups, kleine Änderungen: Ich kümmere mich darum, dass Ihre Website sicher läuft – Sie kümmern sich um Ihr Geschäft.</p>
+            <ul><li>Regelmäßige Updates</li><li>Tägliche Backups</li><li>Schnelle Reaktionszeit</li></ul>
+          </article></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== STATEMENT (Apple-Scrolltext) ===================== -->
+    <section class="statement" id="statement" aria-label="Warum eine gute Website zählt">
+      <div class="statement__sticky">
+        <div class="container">
+          <p class="statement__text" data-scrub>
+            Ihre Website ist oft der <em>erste Eindruck,</em> den Kunden von Ihnen bekommen. Sie sollte schnell laden, auf jedem Gerät überzeugen – und dafür sorgen, dass aus Besuchern <em>echte Anfragen</em> werden.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== 4. ÜBER MICH ===================== -->
+    <section class="section" id="ueber-mich" aria-labelledby="about-title">
+      <div class="container">
+        <div class="about">
+          <div class="about__visual">
+            <!-- BILD-PLATZHALTER: hier später ein Portrait einsetzen (<img src="..." alt="...">) -->
+            <div class="placeholder">
+              <div>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>
+                Platz für Ihr Portrait
+              </div>
+            </div>
+            <div class="about__tag">
+              <strong>Marvin Julius</strong>
+              <span>Webdesigner aus Norden, Ostfriesland</span>
+            </div>
+          </div>
+
+          <div class="about__text">
+            <span class="eyebrow reveal">Über mich</span>
+            <h2 id="about-title" data-split="mask">Persönlich, direkt und mit Blick für Ihr Business.</h2>
+            <p class="reveal">
+              Ich bin Marvin – Webdesigner aus Norden mit kaufmännischem Hintergrund. Deshalb denke ich bei jeder Website nicht nur an Optik, sondern an das, was am Ende zählt: <strong>mehr Anfragen, mehr Kunden, mehr Vertrauen.</strong>
+            </p>
+            <p class="reveal">
+              Bei mir sprechen Sie nicht mit einer Agentur, sondern immer direkt mit der Person, die Ihre Website baut. Kurze Wege, ehrliche Beratung und ein Ergebnis, auf das Sie stolz sein können – ob hier in Ostfriesland oder deutschlandweit per Video-Call.
+            </p>
+
+            <div class="values" data-stagger>
+              <div class="value reveal">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+                <div><strong>Transparente Preise</strong><span>Sie wissen vorher genau, was Sie bekommen und was es kostet.</span></div>
+              </div>
+              <div class="value reveal">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+                <div><strong>Verständlich statt Fachchinesisch</strong><span>Ich erkläre alles so, dass Sie jede Entscheidung selbst treffen können.</span></div>
+              </div>
+              <div class="value reveal">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+                <div><strong>Auch nach dem Launch da</strong><span>Fragen oder Änderungswünsche? Ein kurzer Anruf genügt.</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- VERSPRECHEN statt Projektzahlen: data-count = Zielwert (zählt beim Sichtbarwerden hoch) -->
+        <div class="promise-head">
+          <h3 class="reveal">Mein Versprechen an Sie</h3>
+          <p class="reveal">Worauf Sie sich bei jedem Projekt verlassen können.</p>
+        </div>
+        <div class="promises" data-stagger>
+          <div class="promise reveal">
+            <div class="promise__num"><span data-count="24">0</span><span class="suffix">h</span></div>
+            <strong>Antwortzeit</strong>
+            <span class="desc">Auf jede Anfrage erhalten Sie innerhalb von 24 Stunden eine Rückmeldung.</span>
+          </div>
+          <div class="promise reveal">
+            <div class="promise__num"><span data-count="100">0</span><span class="suffix">%</span></div>
+            <strong>Festpreis</strong>
+            <span class="desc">Klares Angebot vorab – keine versteckten Kosten, keine bösen Überraschungen.</span>
+          </div>
+          <div class="promise reveal">
+            <div class="promise__num"><span data-count="90">0</span><span class="suffix">+</span></div>
+            <strong>PageSpeed-Ziel</strong>
+            <span class="desc">Jede Seite wird auf einen Google-PageSpeed-Wert von 90 oder mehr optimiert.</span>
+          </div>
+          <div class="promise reveal">
+            <div class="promise__num"><span data-count="1">0</span></div>
+            <strong>Fester Ansprechpartner</strong>
+            <span class="desc">Beratung, Design, Umsetzung und Support – alles aus einer Hand.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== 5. REFERENZEN ===================== -->
+    <section id="referenzen" aria-labelledby="ref-title">
+      <div class="container" style="padding-top: var(--section-y)">
+        <div class="section-head" style="margin-bottom: 0">
+          <span class="eyebrow reveal">Referenzen</span>
+          <h2 id="ref-title" data-split="mask">Ausgewählte Projekte.</h2>
+          <p class="reveal">Scrollen Sie weiter – und sehen Sie sich an, was ich zuletzt umgesetzt habe.</p>
+        </div>
+      </div>
+
+      <!-- SHOWCASE: Browserfenster kippt auf und wächst beim Scrollen, dann scrollt die Seite darin.
+           SCREENSHOT: Ganzseiten-Screenshot als assets/svarle.jpg ablegen (z. B. 1440 px breit). -->
+      <div class="showcase" id="showcase">
+        <div class="showcase__sticky">
+          <div class="device" id="device">
+            <div class="device__bar">
+              <i></i><i></i><i></i>
+              <span class="device__url"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>svarle.com</span>
+            </div>
+            <div class="device__screen" id="deviceScreen">
+              <div class="device__page" id="devicePage">
+                <img src="assets/svarle.jpg" alt="Screenshot der Website svarle.com" onerror="this.remove()" />
+                <!-- Fallback-Mockup (wird nur angezeigt, wenn kein Screenshot vorhanden ist) -->
+                <div class="mock-page" aria-hidden="true">
+                  <div class="mock-page__nav">svarle <span><em>Start</em><em>Angebot</em><em>Über uns</em><em>Kontakt</em></span></div>
+                  <div class="mock-page__hero"><b>svarle.com</b><small>Screenshot folgt – als assets/svarle.jpg ablegen, dann erscheint hier die echte Website.</small></div>
+                  <div class="mock-page__img"></div>
+                  <div class="mock-page__grid"><div></div><div></div><div></div></div>
+                  <div class="mock-page__band">Design &amp; Entwicklung: Julius Webdesign.</div>
+                  <div class="mock-page__grid"><div></div><div></div><div></div></div>
+                  <div class="mock-page__foot">© svarle.com</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="showcase__caption" id="showcaseCaption">
+            <div>
+              <h3>svarle.com</h3>
+              <p>Konzept, Design und Entwicklung der kompletten Website.</p>
+              <div class="tags"><span class="tag">Website</span><span class="tag">Design</span><span class="tag">Entwicklung</span></div>
+            </div>
+            <a href="https://svarle.com" class="btn btn--ghost" target="_blank" rel="noopener" data-magnetic>
+              Website besuchen
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="container" style="padding-bottom: var(--section-y)">
+        <div class="next-project reveal">
+          <div>
+            <h3>Ihr Unternehmen als nächstes Projekt?</h3>
+            <p>Ich nehme aktuell neue Kunden an. Lassen Sie uns gemeinsam herausfinden, was Ihre Website leisten soll.</p>
+          </div>
+          <a href="#kontakt" class="btn" data-magnetic>
+            Projekt starten
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== 6. PROZESS ===================== -->
+    <section class="section process" aria-labelledby="process-title">
+      <div class="container">
+        <div class="section-head">
+          <span class="eyebrow reveal">Ablauf</span>
+          <h2 id="process-title" data-split="mask">In vier Schritten zur neuen Website.</h2>
+          <p class="reveal">Klar strukturiert und ohne Überraschungen – Sie wissen jederzeit, wo Ihr Projekt steht.</p>
+        </div>
+
+        <!-- Die Linie füllt sich mit dem Scrollfortschritt, die Punkte leuchten nacheinander auf -->
+        <ol class="steps" id="steps" data-stagger>
+          <li class="step reveal">
+            <span class="step__dot"></span>
+            <span class="step__num">01</span>
+            <h3>Beratung</h3>
+            <p>Im kostenlosen Erstgespräch lerne ich Ihr Unternehmen, Ihre Ziele und Ihre Kunden kennen. Danach erhalten Sie ein klares Angebot.</p>
+            <span class="step__time">ca. 30 Minuten</span>
+          </li>
+          <li class="step reveal">
+            <span class="step__dot"></span>
+            <span class="step__num">02</span>
+            <h3>Design</h3>
+            <p>Ich entwerfe das Layout Ihrer Website. Sie sehen vorab, wie alles aussehen wird, und geben Feedback, bis es passt.</p>
+            <span class="step__time">ca. 1–2 Wochen</span>
+          </li>
+          <li class="step reveal">
+            <span class="step__dot"></span>
+            <span class="step__num">03</span>
+            <h3>Umsetzung</h3>
+            <p>Aus dem Design wird eine schnelle, responsive Website – optimiert für Smartphone, Tablet, Desktop und Google.</p>
+            <span class="step__time">ca. 1–2 Wochen</span>
+          </li>
+          <li class="step reveal">
+            <span class="step__dot"></span>
+            <span class="step__num">04</span>
+            <h3>Launch</h3>
+            <p>Nach Ihrer Freigabe geht die Seite live. Ich zeige Ihnen, wie Sie Inhalte selbst anpassen – und bleibe Ihr Ansprechpartner.</p>
+            <span class="step__time">1 Tag</span>
+          </li>
+        </ol>
+
+        <div class="cta-band reveal">
+          <h3>Bereit für eine Website, die für Sie arbeitet?</h3>
+          <a href="#kontakt" class="btn" data-magnetic>
+            Jetzt Erstgespräch sichern
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== 7. KONTAKT ===================== -->
+    <section class="section" id="kontakt" aria-labelledby="contact-title">
+      <div class="container">
+        <div class="contact">
+          <div class="contact__info">
+            <span class="eyebrow reveal">Kontakt</span>
+            <h2 id="contact-title" data-split="mask">Lassen Sie uns über Ihr Projekt sprechen.</h2>
+            <p class="reveal">Erzählen Sie mir kurz von Ihrem Vorhaben. Ich melde mich innerhalb von 24 Stunden – unverbindlich und kostenlos.</p>
+
+            <ul class="contact__list" data-stagger>
+              <li class="reveal">
+                <a href="tel:+491621853738">
+                  <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg></span>
+                  <span><small>Telefon</small>0162 1853738</span>
+                </a>
+              </li>
+              <li class="reveal">
+                <!-- E-MAIL-PLATZHALTER: Adresse anpassen -->
+                <a href="mailto:hallo@julius-webdesign.de">
+                  <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg></span>
+                  <span><small>E-Mail</small>hallo@julius-webdesign.de</span>
+                </a>
+              </li>
+              <li class="reveal">
+                <div>
+                  <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg></span>
+                  <span><small>Standort</small>26506 Norden – vor Ort in Ostfriesland oder remote</span>
+                </div>
+              </li>
+            </ul>
+          </div>
+
+          <!-- Formular: nur UI, Absenden wird in JS abgefangen -->
+          <form class="form reveal" id="contactForm" novalidate>
+            <div class="form__row">
+              <div class="field">
+                <label for="name">Name *</label>
+                <input id="name" name="name" type="text" placeholder="Max Mustermann" autocomplete="name" required />
+              </div>
+              <div class="field">
+                <label for="company">Unternehmen</label>
+                <input id="company" name="company" type="text" placeholder="Mustermann GmbH" autocomplete="organization" />
+              </div>
+            </div>
+            <div class="form__row">
+              <div class="field">
+                <label for="email">E-Mail *</label>
+                <input id="email" name="email" type="email" placeholder="max@beispiel.de" autocomplete="email" required />
+              </div>
+              <div class="field">
+                <label for="budget">Budget</label>
+                <select id="budget" name="budget">
+                  <option value="">Bitte wählen</option>
+                  <option>bis 1.500 €</option>
+                  <option>1.500 – 3.000 €</option>
+                  <option>3.000 – 5.000 €</option>
+                  <option>über 5.000 €</option>
+                  <option>Noch unklar</option>
+                </select>
+              </div>
+            </div>
+            <div class="field">
+              <span id="interest-label" class="label">Worum geht es?</span>
+              <div class="chips" role="group" aria-labelledby="interest-label">
+                <label class="chip"><input type="checkbox" name="interest" value="Website" /><span>Neue Website</span></label>
+                <label class="chip"><input type="checkbox" name="interest" value="Landingpage" /><span>Landingpage</span></label>
+                <label class="chip"><input type="checkbox" name="interest" value="Redesign" /><span>Redesign</span></label>
+                <label class="chip"><input type="checkbox" name="interest" value="Wartung" /><span>Wartung</span></label>
+              </div>
+            </div>
+            <div class="field">
+              <label for="message">Ihre Nachricht *</label>
+              <textarea id="message" name="message" placeholder="Erzählen Sie kurz von Ihrem Unternehmen und was Sie sich vorstellen …" required></textarea>
+            </div>
+            <label class="form__consent">
+              <input type="checkbox" name="consent" required />
+              <span>Ich bin damit einverstanden, dass meine Angaben zur Bearbeitung meiner Anfrage verwendet werden. Mehr in der <a href="#">Datenschutzerklärung</a>.</span>
+            </label>
+            <div class="form__footer">
+              <span class="form__note">* Pflichtfelder</span>
+              <button type="submit" class="btn" data-magnetic>
+                Anfrage senden
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+              </button>
+            </div>
+            <div class="form__success" id="formSuccess" role="status" aria-live="polite">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+              Danke für Ihre Nachricht! Ich melde mich innerhalb von 24 Stunden bei Ihnen.
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ===================== 8. FOOTER ===================== -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__top">
+        <div class="footer__brand">
+          <a href="#top" class="logo" aria-label="Julius Webdesign – nach oben">
+            <svg viewBox="0 0 1354 294" aria-hidden="true"><use href="#logo-mark" /></svg>
+          </a>
+          <p>Moderne Websites für kleine und lokale Unternehmen – persönlich betreut aus Norden, Ostfriesland.</p>
+          <!-- SOCIAL-PLATZHALTER: href-Attribute anpassen (WhatsApp ist bereits mit der Nummer verknüpft) -->
+          <div class="socials">
+            <a href="#" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><path d="M17.5 6.5h.01"/></svg></a>
+            <a href="#" aria-label="LinkedIn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M8 10v7M8 7v.01M12 17v-4a2 2 0 0 1 4 0v4M12 10v7"/></svg></a>
+            <a href="#" aria-label="GitHub"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6 0 0 0-1.3-3.2 4.2 4.2 0 0 0-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3 0 0 0-6.2 0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2 0 0 0-.1 3.2A4.6 4.6 0 0 0 4 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></svg></a>
+            <a href="https://wa.me/491621853738" aria-label="WhatsApp" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21l1.7-5A8.5 8.5 0 1 1 8 19.3z"/><path d="M9 10c.5 2 2 3.5 4 4l1.2-1.2 2 1-.5 1.5c-3.5.5-7.5-3.5-7-7l1.5-.5 1 2z"/></svg></a>
+          </div>
+        </div>
+        <div>
+          <h4>Navigation</h4>
+          <ul>
+            <li><a href="#leistungen">Leistungen</a></li>
+            <li><a href="#referenzen">Referenzen</a></li>
+            <li><a href="#ueber-mich">Über mich</a></li>
+            <li><a href="#kontakt">Kontakt</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Kontakt</h4>
+          <ul>
+            <li><a href="tel:+491621853738">0162 1853738</a></li>
+            <li><a href="mailto:hallo@julius-webdesign.de">hallo@julius-webdesign.de</a></li>
+            <li><span>26506 Norden</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Großes Logo als Abschluss -->
+      <div class="footer__giant" aria-hidden="true">
+        <svg viewBox="0 0 1354 294"><use href="#logo-mark" /></svg>
+      </div>
+
+      <div class="footer__bottom">
+        <span>© <span id="year">2026</span> Julius Webdesign. Alle Rechte vorbehalten.</span>
+        <nav aria-label="Rechtliches">
+          <a href="#">Impressum</a>
+          <a href="#">Datenschutz</a>
+        </nav>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+  (function () {
+    'use strict';
+
+    var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var canHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+    var clamp = function (v, a, b) { return Math.min(Math.max(v, a), b); };
+    var easeOut = function (t) { return 1 - Math.pow(1 - t, 3); };
+
+    /* ---------------------------------------------------------
+       1) TEXT-SPLIT: zerlegt Text in Wörter (.w > .w__i),
+          verschachtelte Elemente (z. B. <em>, .grad) bleiben erhalten.
+       --------------------------------------------------------- */
+    function splitWords(root) {
+      var count = 0;
+      (function walk(node) {
+        Array.prototype.slice.call(node.childNodes).forEach(function (n) {
+          if (n.nodeType === 1) { walk(n); return; }
+          if (n.nodeType !== 3) return;
+          var frag = document.createDocumentFragment();
+          n.textContent.split(/(\s+)/).forEach(function (part) {
+            if (!part) return;
+            if (/^\s+$/.test(part)) { frag.appendChild(document.createTextNode(' ')); return; }
+            var w = document.createElement('span'); w.className = 'w';
+            var i = document.createElement('span'); i.className = 'w__i';
+            i.textContent = part; i.style.setProperty('--i', count++);
+            w.appendChild(i); frag.appendChild(w);
+          });
+          n.replaceWith(frag);
+        });
+      })(root);
+      return Array.prototype.slice.call(root.querySelectorAll('.w__i'));
+    }
+    document.querySelectorAll('[data-split]').forEach(splitWords);
+    var scrubEl = document.querySelector('[data-scrub]');
+    var scrubWords = scrubEl ? splitWords(scrubEl) : [];
+
+    /* ---------------------------------------------------------
+       2) STAGGER: Kinder in [data-stagger] bekommen gestaffelte
+          Verzögerung (100ms Versatz) als CSS-Variable --delay
+       --------------------------------------------------------- */
+    document.querySelectorAll('[data-stagger]').forEach(function (group) {
+      group.querySelectorAll(':scope > .reveal').forEach(function (el, i) {
+        el.style.setProperty('--delay', (i * 100) + 'ms');
+      });
+    });
+
+    /* ---------------------------------------------------------
+       3) SCROLL-REVEAL via IntersectionObserver
+          Element wird einmalig eingeblendet, dann nicht mehr beobachtet
+       --------------------------------------------------------- */
+    var revealEls = document.querySelectorAll('.reveal, [data-split], .about__visual, .footer__giant');
+    if ('IntersectionObserver' in window && !reduceMotion) {
+      var revealObserver = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (!entry.isIntersecting) return;
+          entry.target.classList.add('is-visible');
+          revealObserver.unobserve(entry.target);
+        });
+      }, { threshold: 0.15, rootMargin: '0px 0px -8% 0px' });
+      revealEls.forEach(function (el) { revealObserver.observe(el); });
+    } else {
+      revealEls.forEach(function (el) { el.classList.add('is-visible'); });
+    }
+
+    /* ---------------------------------------------------------
+       4) COUNT-UP: Zahlen zählen beim Sichtbarwerden hoch
+       --------------------------------------------------------- */
+    function countUp(el) {
+      var target = parseFloat(el.getAttribute('data-count')) || 0;
+      if (reduceMotion) { el.textContent = target; return; }
+      var duration = 1600, start = null;
+      function tick(ts) {
+        if (!start) start = ts;
+        var p = Math.min((ts - start) / duration, 1);
+        el.textContent = Math.round(target * easeOut(p));
+        if (p < 1) requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
+    }
+    var counters = document.querySelectorAll('[data-count]');
+    if ('IntersectionObserver' in window) {
+      var countObserver = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (!entry.isIntersecting) return;
+          setTimeout(function () { countUp(entry.target); }, 300);
+          countObserver.unobserve(entry.target);
+        });
+      }, { threshold: 0.6 });
+      counters.forEach(function (el) { countObserver.observe(el); });
+    } else {
+      counters.forEach(function (el) { el.textContent = el.getAttribute('data-count'); });
+    }
+
+    /* ---------------------------------------------------------
+       5) SCROLL-ENGINE: ein einziger, per rAF gedrosselter Handler
+          für alle scrollgekoppelten Effekte.
+          stickyProgress(el): 0 = Section-Oberkante erreicht den Viewport-Rand,
+                              1 = Ende der Section (für sticky Sections)
+       --------------------------------------------------------- */
+    var header = document.getElementById('header');
+    var progressBar = document.getElementById('progress');
+    var parallaxEl = document.querySelector('[data-parallax]');
+    var parallaxFactor = parallaxEl ? parseFloat(parallaxEl.getAttribute('data-parallax')) : 0;
+    var heroContent = document.getElementById('heroContent');
+    var statement = document.getElementById('statement');
+    var showcase = document.getElementById('showcase');
+    var device = document.getElementById('device');
+    var deviceScreen = document.getElementById('deviceScreen');
+    var devicePage = document.getElementById('devicePage');
+    var caption = document.getElementById('showcaseCaption');
+    var steps = document.getElementById('steps');
+    var stepItems = steps ? steps.querySelectorAll('.step') : [];
+    var lastY = window.pageYOffset, ticking = false;
+
+    function stickyProgress(el) {
+      var r = el.getBoundingClientRect();
+      var dist = r.height - window.innerHeight;
+      return dist > 0 ? clamp(-r.top / dist, 0, 1) : 0;
+    }
+
+    function onScroll() {
+      var y = window.pageYOffset;
+      var vh = window.innerHeight;
+      var docH = document.documentElement.scrollHeight - vh;
+
+      // Header: Hintergrund ab 12px; blendet beim Runterscrollen aus, beim Hochscrollen ein
+      header.classList.toggle('is-scrolled', y > 12);
+      if (Math.abs(y - lastY) > 4) {
+        header.classList.toggle('is-hidden', y > lastY && y > vh * 0.6);
+        lastY = y;
+      }
+
+      // Fortschrittsbalken
+      progressBar.style.transform = 'scaleX(' + (docH > 0 ? y / docH : 0).toFixed(4) + ')';
+
+      if (!reduceMotion) {
+        // Hero: Parallax-Hintergrund + Inhalt fadet/schrumpft beim Wegscrollen
+        if (y < vh * 1.2) {
+          if (parallaxEl) parallaxEl.style.transform = 'translate3d(0,' + (y * parallaxFactor).toFixed(1) + 'px,0)';
+          var hp = clamp(y / vh, 0, 1);
+          heroContent.style.transform = 'translate3d(0,' + (y * 0.18).toFixed(1) + 'px,0) scale(' + (1 - hp * 0.06).toFixed(4) + ')';
+          heroContent.style.opacity = clamp(1 - hp * 1.3, 0, 1).toFixed(3);
+        }
+
+        // Statement: Wörter leuchten nacheinander auf
+        if (scrubWords.length) {
+          var lit = Math.round(clamp(stickyProgress(statement) * 1.15, 0, 1) * scrubWords.length);
+          for (var i = 0; i < scrubWords.length; i++) scrubWords[i].classList.toggle('is-lit', i < lit);
+        }
+
+        // Showcase: Phase 1 (0–0.35) Fenster kippt auf & wächst, Phase 2 (0.35–0.95) Seite scrollt darin
+        if (showcase) {
+          var p = stickyProgress(showcase);
+          var grow = easeOut(clamp(p / 0.35, 0, 1));
+          device.style.transform = 'perspective(1600px) rotateX(' + ((1 - grow) * 18).toFixed(2) + 'deg) scale(' + (0.74 + 0.26 * grow).toFixed(4) + ')';
+          var maxShift = Math.max(devicePage.offsetHeight - deviceScreen.offsetHeight, 0);
+          var inner = clamp((p - 0.35) / 0.6, 0, 1);
+          devicePage.style.transform = 'translate3d(0,' + (-maxShift * inner).toFixed(1) + 'px,0)';
+          caption.classList.toggle('is-shown', p > 0.25);
+        }
+      }
+
+      // Prozess: Linie wächst mit, Punkte werden nacheinander aktiv
+      if (steps) {
+        var r = steps.getBoundingClientRect();
+        var lp = reduceMotion ? 1 : clamp((vh * 0.75 - r.top) / (r.height + vh * 0.1), 0, 1);
+        steps.style.setProperty('--line', lp.toFixed(4));
+        for (var s = 0; s < stepItems.length; s++) {
+          stepItems[s].classList.toggle('is-active', lp >= s / stepItems.length + 0.02);
+        }
+      }
+
+      ticking = false;
+    }
+    window.addEventListener('scroll', function () {
+      if (!ticking) { requestAnimationFrame(onScroll); ticking = true; }
+    }, { passive: true });
+    window.addEventListener('resize', onScroll);
+    window.addEventListener('load', onScroll);
+    onScroll();
+
+    /* ---------------------------------------------------------
+       6) AKTIVER NAV-LINK je nach sichtbarer Section
+       --------------------------------------------------------- */
+    var navLinks = document.querySelectorAll('.nav a');
+    if ('IntersectionObserver' in window) {
+      var navObserver = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (!entry.isIntersecting) return;
+          navLinks.forEach(function (a) { a.classList.toggle('is-active', a.getAttribute('href') === '#' + entry.target.id); });
+        });
+      }, { rootMargin: '-45% 0px -50% 0px' });
+      ['leistungen', 'referenzen', 'ueber-mich', 'kontakt'].forEach(function (id) {
+        var sec = document.getElementById(id); if (sec) navObserver.observe(sec);
+      });
+    }
+
+    /* ---------------------------------------------------------
+       7) MAUS-EFFEKTE (nur Desktop): Hero-Spotlight, Card-Glow + 3D-Tilt,
+          magnetische Buttons. Nutzt die CSS-Eigenschaften `rotate`/`translate`,
+          damit sie nicht mit den Reveal-/Hover-Transforms kollidieren.
+       --------------------------------------------------------- */
+    if (canHover && !reduceMotion) {
+      var hero = document.getElementById('hero');
+      hero.addEventListener('pointermove', function (e) {
+        var r = hero.getBoundingClientRect();
+        hero.style.setProperty('--sx', (e.clientX - r.left) + 'px');
+        hero.style.setProperty('--sy', (e.clientY - r.top) + 'px');
+      });
+
+      document.querySelectorAll('[data-tilt]').forEach(function (card) {
+        card.addEventListener('pointermove', function (e) {
+          var r = card.getBoundingClientRect();
+          var x = (e.clientX - r.left) / r.width, yy = (e.clientY - r.top) / r.height;
+          card.style.setProperty('--mx', (x * 100) + '%');
+          card.style.setProperty('--my', (yy * 100) + '%');
+          card.style.rotate = (0.5 - yy).toFixed(3) + ' ' + (x - 0.5).toFixed(3) + ' 0 6deg';
+        });
+        card.addEventListener('pointerleave', function () { card.style.rotate = ''; });
+      });
+
+      document.querySelectorAll('[data-magnetic]').forEach(function (btn) {
+        btn.addEventListener('pointermove', function (e) {
+          var r = btn.getBoundingClientRect();
+          var dx = e.clientX - (r.left + r.width / 2), dy = e.clientY - (r.top + r.height / 2);
+          btn.style.translate = (dx * 0.18).toFixed(1) + 'px ' + (dy * 0.28).toFixed(1) + 'px';
+        });
+        btn.addEventListener('pointerleave', function () { btn.style.translate = ''; });
+      });
+    }
+
+    /* ---------------------------------------------------------
+       8) MOBILE-MENÜ
+       --------------------------------------------------------- */
+    var toggle = document.getElementById('menuToggle');
+    var root = document.documentElement;
+    function setMenu(open) {
+      root.classList.toggle('menu-open', open);
+      document.body.classList.toggle('menu-open', open);
+      toggle.setAttribute('aria-expanded', String(open));
+      toggle.setAttribute('aria-label', open ? 'Menü schließen' : 'Menü öffnen');
+    }
+    toggle.addEventListener('click', function () { setMenu(!root.classList.contains('menu-open')); });
+    document.querySelectorAll('.mobile-menu a').forEach(function (a) {
+      a.addEventListener('click', function () { setMenu(false); });
+    });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') setMenu(false); });
+    window.addEventListener('resize', function () { if (window.innerWidth >= 900) setMenu(false); });
+
+    /* ---------------------------------------------------------
+       9) KONTAKTFORMULAR (nur UI – kein Versand)
+          Hier später Backend/Service (z. B. Formspree) anbinden.
+       --------------------------------------------------------- */
+    var form = document.getElementById('contactForm');
+    var success = document.getElementById('formSuccess');
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      if (!form.checkValidity()) { form.reportValidity(); return; }
+      success.classList.add('is-shown');
+      form.reset();
+    });
+
+    document.getElementById('year').textContent = new Date().getFullYear();
+  })();
+  </script>
+</body>
+</html>
