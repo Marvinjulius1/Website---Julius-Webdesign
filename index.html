@@ -450,8 +450,8 @@
        Browserfenster "klebt", kippt sich auf und wächst beim Scrollen,
        danach scrollt die Website darin durch.
        ========================================================= */
-    .showcase { position: relative; height: 420vh; }
-    @media (max-width: 700px) { .showcase { height: 340vh; } }
+    .showcase { position: relative; height: 220vh; }
+    @media (max-width: 700px) { .showcase { height: 180vh; } }
     .showcase__sticky {
       position: sticky; top: 0; height: 100vh; height: 100svh;
       display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -460,7 +460,7 @@
     }
     .device {
       /* Breite richtet sich auch nach der Viewport-Höhe, damit das Fenster immer ganz sichtbar ist */
-      width: min(1100px, 100%, calc((100svh - 15rem) * 1.6));
+      width: min(1100px, 100%, calc((100svh - 15rem) * 1.73));
       border-radius: 18px; overflow: hidden;
       background: #0f1115; border: 1px solid var(--border-strong);
       box-shadow: 0 60px 120px -40px rgba(0,0,0,0.9), 0 0 0 1px rgba(255,255,255,0.03);
@@ -476,7 +476,8 @@
       display: inline-flex; align-items: center; gap: 0.4rem;
     }
     .device__url svg { width: 11px; height: 11px; }
-    .device__screen { position: relative; aspect-ratio: 16 / 10; overflow: hidden; background: #f6f5f2; }
+    /* Seitenverhältnis = Screenshot (assets/svarle.jpg, 1800 × 1038) */
+    .device__screen { position: relative; aspect-ratio: 1800 / 1038; overflow: hidden; background: #163826; }
     .device__page { position: absolute; left: 0; right: 0; top: 0; will-change: transform; }
     .device__page img { width: 100%; height: auto; }
     /* Fallback-Mockup, falls noch kein Screenshot (assets/svarle.jpg) vorliegt */
@@ -1311,12 +1312,12 @@
         // Showcase: Phase 1 (0–0.35) Fenster kippt auf & wächst, Phase 2 (0.35–0.95) Seite scrollt darin
         if (showcase) {
           var p = stickyProgress(showcase);
-          var grow = easeOut(clamp(p / 0.35, 0, 1));
+          var grow = easeOut(clamp(p / 0.6, 0, 1));
           device.style.transform = 'perspective(1600px) rotateX(' + ((1 - grow) * 18).toFixed(2) + 'deg) scale(' + (0.74 + 0.26 * grow).toFixed(4) + ')';
           var maxShift = Math.max(devicePage.offsetHeight - deviceScreen.offsetHeight, 0);
           var inner = clamp((p - 0.35) / 0.6, 0, 1);
           devicePage.style.transform = 'translate3d(0,' + (-maxShift * inner).toFixed(1) + 'px,0)';
-          caption.classList.toggle('is-shown', p > 0.25);
+          caption.classList.toggle('is-shown', p > 0.4);
         }
       }
 
