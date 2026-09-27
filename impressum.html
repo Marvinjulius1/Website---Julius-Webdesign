@@ -17,7 +17,7 @@
       --bg: #0b0c0f; --bg-elevated: #121418; --surface: #16191e;
       --border: rgba(255,255,255,0.08); --border-strong: rgba(255,255,255,0.14);
       --text: #f2f1ee; --text-muted: #9a9ca3; --text-dim: #6b6e76;
-      --accent: #8f8cff; --accent-strong: #a9a6ff; --accent-2: #7fd3ff; --accent-soft: rgba(143,140,255,0.14);
+      --accent: #f2f1ee; --accent-strong: #ffffff; --accent-soft: rgba(242,241,238,0.08);
       --font: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
       --gutter: clamp(1.25rem, 4vw, 2.5rem);
       --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
@@ -47,7 +47,6 @@
 
     /* Hero der Rechtsseite */
     .legal-hero { position: relative; padding: clamp(4rem, 9vw, 7rem) 0 clamp(2.5rem, 5vw, 4rem); overflow: hidden; border-bottom: 1px solid var(--border); }
-    .legal-hero::before { content: ""; position: absolute; width: 520px; height: 520px; right: -120px; top: -220px; border-radius: 50%; background: radial-gradient(circle, rgba(143,140,255,0.35), transparent 65%); filter: blur(60px); pointer-events: none; }
     .legal-hero h1 { margin: 0; font-size: clamp(2.5rem, 6vw + 0.5rem, 4.5rem); letter-spacing: -0.04em; line-height: 1.05; font-weight: 600; }
     .legal-hero p { margin: 1rem 0 0; color: var(--text-muted); font-size: 1.05rem; max-width: 560px; }
 
@@ -71,7 +70,7 @@
     .prose li { margin-bottom: 0.35rem; }
     .prose li::marker { color: var(--accent); }
     .prose strong { color: var(--text); font-weight: 600; }
-    .prose a { color: var(--accent-strong); text-decoration: underline; text-decoration-color: rgba(169,166,255,0.35); text-underline-offset: 3px; transition: text-decoration-color 250ms; }
+    .prose a { color: var(--accent-strong); text-decoration: underline; text-decoration-color: rgba(242,241,238,0.35); text-underline-offset: 3px; transition: text-decoration-color 250ms; }
     .prose a:hover { text-decoration-color: var(--accent-strong); }
     .card { padding: 1.5rem; border-radius: 18px; border: 1px solid var(--border); background: linear-gradient(180deg, rgba(255,255,255,0.035), rgba(255,255,255,0.01)); }
     .card p:last-child { margin-bottom: 0; }
