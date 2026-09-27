@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Impressum – Julius Webdesign</title>
+  <meta name="robots" content="noindex, follow" />
+  <meta name="theme-color" content="#0b0c0f" />
+  <link rel="preload" href="assets/fonts/inter-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="assets/fonts/inter-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin />
+  <style>
+    @font-face { font-family: "Inter"; font-style: normal; font-weight: 400; font-display: swap; src: url("assets/fonts/inter-latin-400-normal.woff2") format("woff2"); }
+    @font-face { font-family: "Inter"; font-style: normal; font-weight: 600; font-display: swap; src: url("assets/fonts/inter-latin-600-normal.woff2") format("woff2"); }
+
+    /* Gleiche Design-Tokens wie auf der Startseite */
+    :root {
+      --bg: #0b0c0f; --bg-elevated: #121418; --surface: #16191e;
+      --border: rgba(255,255,255,0.08); --border-strong: rgba(255,255,255,0.14);
+      --text: #f2f1ee; --text-muted: #9a9ca3; --text-dim: #6b6e76;
+      --accent: #8f8cff; --accent-strong: #a9a6ff; --accent-2: #7fd3ff; --accent-soft: rgba(143,140,255,0.14);
+      --font: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      --gutter: clamp(1.25rem, 4vw, 2.5rem);
+      --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+      --header-h: 72px;
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font); line-height: 1.7; -webkit-font-smoothing: antialiased; }
+    a { color: inherit; }
+    svg { display: block; }
+    ::selection { background: var(--accent); color: var(--bg); }
+    :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 6px; }
+    .container { width: 100%; max-width: 1180px; margin-inline: auto; padding-inline: var(--gutter); }
+
+    /* Header */
+    .header { position: sticky; top: 0; z-index: 10; height: var(--header-h); background: rgba(11,12,15,0.72); backdrop-filter: saturate(160%) blur(16px); -webkit-backdrop-filter: saturate(160%) blur(16px); border-bottom: 1px solid var(--border); }
+    .header__inner { height: 100%; display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+    .logo { color: var(--text); text-decoration: none; }
+    .logo svg { height: 30px; width: auto; aspect-ratio: 1354 / 294; fill: currentColor; }
+    .back {
+      display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.6rem 1rem; border-radius: 999px;
+      border: 1px solid var(--border-strong); color: var(--text); text-decoration: none; font-size: 0.875rem; font-weight: 600;
+      transition: background-color 300ms, border-color 300ms, transform 300ms var(--ease-out);
+    }
+    .back:hover { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.25); transform: scale(1.03); }
+    .back svg { width: 15px; height: 15px; transition: transform 300ms var(--ease-out); }
+    .back:hover svg { transform: translateX(-3px); }
+
+    /* Hero der Rechtsseite */
+    .legal-hero { position: relative; padding: clamp(4rem, 9vw, 7rem) 0 clamp(2.5rem, 5vw, 4rem); overflow: hidden; border-bottom: 1px solid var(--border); }
+    .legal-hero::before { content: ""; position: absolute; width: 520px; height: 520px; right: -120px; top: -220px; border-radius: 50%; background: radial-gradient(circle, rgba(143,140,255,0.35), transparent 65%); filter: blur(60px); pointer-events: none; }
+    .legal-hero h1 { margin: 0; font-size: clamp(2.5rem, 6vw + 0.5rem, 4.5rem); letter-spacing: -0.04em; line-height: 1.05; font-weight: 600; }
+    .legal-hero p { margin: 1rem 0 0; color: var(--text-muted); font-size: 1.05rem; max-width: 560px; }
+
+    /* Inhalt */
+    .legal { display: grid; gap: 3rem; padding-block: clamp(3rem, 6vw, 5rem); }
+    @media (min-width: 960px) { .legal { grid-template-columns: 240px 1fr; gap: 5rem; } }
+    .toc { display: none; }
+    @media (min-width: 960px) {
+      .toc { display: block; position: sticky; top: calc(var(--header-h) + 2rem); align-self: start; }
+      .toc ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.5rem; border-left: 1px solid var(--border); }
+      .toc a { display: block; padding-left: 1rem; margin-left: -1px; border-left: 1px solid transparent; color: var(--text-dim); text-decoration: none; font-size: 0.875rem; transition: color 250ms, border-color 250ms; }
+      .toc a:hover, .toc a.is-active { color: var(--text); border-color: var(--accent); }
+    }
+    .prose { max-width: 760px; }
+    .prose section + section { margin-top: 3rem; padding-top: 3rem; border-top: 1px solid var(--border); }
+    .prose h2 { margin: 0 0 1rem; font-size: clamp(1.35rem, 1.2vw + 1rem, 1.75rem); letter-spacing: -0.025em; line-height: 1.2; font-weight: 600; scroll-margin-top: calc(var(--header-h) + 1.5rem); }
+    .prose h3 { margin: 1.75rem 0 0.5rem; font-size: 1.05rem; font-weight: 600; }
+    .prose p, .prose li { color: var(--text-muted); }
+    .prose p { margin: 0 0 1rem; }
+    .prose ul { margin: 0 0 1rem; padding-left: 1.2rem; }
+    .prose li { margin-bottom: 0.35rem; }
+    .prose li::marker { color: var(--accent); }
+    .prose strong { color: var(--text); font-weight: 600; }
+    .prose a { color: var(--accent-strong); text-decoration: underline; text-decoration-color: rgba(169,166,255,0.35); text-underline-offset: 3px; transition: text-decoration-color 250ms; }
+    .prose a:hover { text-decoration-color: var(--accent-strong); }
+    .card { padding: 1.5rem; border-radius: 18px; border: 1px solid var(--border); background: linear-gradient(180deg, rgba(255,255,255,0.035), rgba(255,255,255,0.01)); }
+    .card p:last-child { margin-bottom: 0; }
+    .card p { color: var(--text); }
+    /* PLATZHALTER: gelb markiert – vor Veröffentlichung ausfüllen */
+    .todo { background: rgba(254,188,46,0.15); color: #ffd98a; padding: 0.05em 0.35em; border-radius: 4px; }
+
+    /* Sanftes Einblenden (IntersectionObserver) */
+    .js .reveal { opacity: 0; transform: translate3d(0, 24px, 0); transition: opacity 750ms var(--ease-out), transform 750ms var(--ease-out); }
+    .js .reveal.is-visible { opacity: 1; transform: none; }
+
+    /* Footer */
+    .footer { border-top: 1px solid var(--border); padding-block: 2rem; color: var(--text-dim); font-size: 0.825rem; }
+    .footer .container { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 1rem; }
+    .footer nav { display: flex; gap: 1.5rem; }
+    .footer a { text-decoration: none; transition: color 250ms; }
+    .footer a:hover, .footer a[aria-current] { color: var(--text); }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { transition-duration: 0.01ms !important; }
+      .js .reveal { opacity: 1; transform: none; }
+    }
+  </style>
+  <script>document.documentElement.classList.add('js');</script>
+</head>
+<body>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="logo-mark" viewBox="0 0 1354 294"><path fill-rule="evenodd" d="M915 293L846 294L846 277L846 260L898 260L951 260L951 250L951 241L899 241L846 241L846 198L846 155L915 155L984 155L984 172L984 188L932 188L879 188L879 198L879 208L932 208L984 208L984 250L984 293L915 293ZM1354 294L1354 294L1337 293L1321 293L1321 282L1321 270L1312 264L1304 258L1281 242L1258 226L1254 223L1249 220L1249 256L1249 293L1232 293L1216 293L1216 224L1216 155L1233 155L1249 154L1249 166L1249 178L1266 190L1284 202L1302 215L1320 228L1321 192L1321 155L1338 155L1354 155L1354 224L1354 294L1354 294ZM96 293L0 293L0 224L0 155L17 155L34 155L34 208L34 260L56 260L79 260L79 208L79 155L96 155L113 155L113 208L113 260L136 260L158 260L158 208L158 155L175 155L192 155L192 224L192 293L96 293ZM281 293L212 293L212 224L212 155L281 155L350 155L350 172L350 188L298 188L245 188L245 198L245 208L298 208L350 208L350 224L350 241L298 241L245 241L245 250L245 260L298 260L350 260L350 276L350 293L281 293ZM440 293L370 293L370 224L370 155L440 155L509 155L509 224L509 293L440 293ZM598 293L529 293L529 250L529 207L546 207L562 207L562 234L562 260L598 260L634 260L634 224L634 188L582 188L529 188L529 172L529 155L598 155L667 155L667 224L667 293L598 293ZM756 293L687 293L687 224L687 154L756 155L826 155L826 172L826 188L773 188L720 188L720 198L720 208L773 208L826 208L826 224L826 241L773 241L720 241L720 250L720 260L773 260L826 260L826 276L826 293L756 293ZM1020 293L1004 293L1004 245L1004 197L1020 197L1037 197L1037 245L1037 293L1020 293ZM1126 293L1057 293L1057 224L1057 155L1126 155L1196 155L1196 171L1196 188L1143 188L1090 188L1090 224L1090 260L1126 260L1162 260L1162 250L1162 242L1149 241L1136 241L1136 224L1136 208L1166 208L1196 208L1196 250L1196 293L1126 293ZM439 260L475 260L475 250L475 241L439 241L403 241L403 250L403 260L439 260ZM439 208L475 208L475 198L475 188L439 188L403 188L403 198L403 208L439 208ZM1020 188L1004 188L1004 172L1004 155L1020 155L1037 155L1037 172L1037 188L1020 188ZM492 138L423 138L423 69L423 0L440 0L456 0L456 52L456 105L492 105L528 105L528 52L528 0L545 0L562 0L562 69L562 138L492 138ZM333 138L264 138L264 109L264 80L281 79L298 79L298 92L298 105L334 105L370 105L370 52L370 0L386 0L403 0L403 69L403 138L333 138ZM650 138L581 138L581 69L581 0L598 0L615 0L615 52L615 105L668 105L720 105L720 122L720 138L650 138ZM756 138L740 138L740 90L740 42L756 42L773 42L773 90L773 138L756 138ZM862 138L793 138L793 69L793 0L810 0L826 0L826 52L826 105L862 105L898 105L898 52L898 0L915 0L932 0L932 69L932 138L862 138ZM1021 138L952 138L952 122L952 105L1004 105L1057 105L1057 96L1057 86L1004 86L952 86L952 43L952 0L1021 -0L1090 -0L1090 16L1090 33L1037 33L985 33L985 43L985 53L1038 53L1090 53L1090 96L1090 138L1021 138ZM756 33L740 33L740 16L740 0L756 0L773 0L773 16L773 33L756 33Z"/></symbol>
+  </svg>
+
+  <header class="header">
+    <div class="container header__inner">
+      <a href="index.html" class="logo" aria-label="Julius Webdesign – Startseite">
+        <svg viewBox="0 0 1354 294" aria-hidden="true"><use href="#logo-mark" /></svg>
+      </a>
+      <a href="index.html" class="back">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 18l-6-6 6-6"/></svg>
+        Zur Startseite
+      </a>
+    </div>
+  </header>
+
+  <main>
+    <div class="legal-hero">
+      <div class="container">
+        <h1 class="reveal">Impressum</h1>
+        <p class="reveal">Angaben zum Anbieter dieser Website und rechtliche Hinweise.</p>
+      </div>
+    </div>
+
+    <div class="container legal">
+      <nav class="toc" aria-label="Inhalt">
+        <ol>
+          <li><a href="#anbieter">Angaben gemäß § 5 DDG</a></li>
+          <li><a href="#kontakt">Kontakt</a></li>
+          <li><a href="#umsatzsteuer">Umsatzsteuer</a></li>
+          <li><a href="#verantwortlich">Verantwortlich für den Inhalt</a></li>
+          <li><a href="#streitbeilegung">Verbraucherstreitbeilegung</a></li>
+          <li><a href="#haftung-inhalte">Haftung für Inhalte</a></li>
+          <li><a href="#haftung-links">Haftung für Links</a></li>
+          <li><a href="#urheberrecht">Urheberrecht</a></li>
+        </ol>
+      </nav>
+      <div class="prose">
+        <section id="anbieter" class="reveal">
+          <h2>Angaben gemäß § 5 DDG</h2>
+          <div class="card">
+            <p><strong>Marvin Julius</strong><br />
+            Julius Webdesign<br />
+            <span class="todo">Straße Hausnummer</span><br />
+            26506 Norden<br />
+            Deutschland</p>
+          </div>
+        </section>
+        <section id="kontakt" class="reveal">
+          <h2>Kontakt</h2>
+          <p>Telefon: <a href="tel:+491621853738">0162 1853738</a><br />
+          E-Mail: <a href="mailto:management.marvn@gmail.com">management.marvn@gmail.com</a></p>
+        </section>
+        <section id="umsatzsteuer" class="reveal">
+          <h2>Umsatzsteuer</h2>
+          <!-- Nur ausfüllen, wenn eine USt-IdNr. vorhanden ist. Als Kleinunternehmer (§ 19 UStG) ohne USt-IdNr. kann dieser Abschnitt entfallen. -->
+          <p>Umsatzsteuer-Identifikationsnummer gemäß § 27a Umsatzsteuergesetz:<br />
+          <span class="todo">DE XXX XXX XXX – oder Abschnitt löschen, falls keine vorhanden</span></p>
+        </section>
+        <section id="verantwortlich" class="reveal">
+          <h2>Verantwortlich für den Inhalt</h2>
+          <p>Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV:<br />
+          Marvin Julius, Anschrift wie oben.</p>
+        </section>
+        <section id="streitbeilegung" class="reveal">
+          <h2>Verbraucherstreitbeilegung</h2>
+          <p>Ich bin nicht bereit oder verpflichtet, an Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teilzunehmen.</p>
+        </section>
+        <section id="haftung-inhalte" class="reveal">
+          <h2>Haftung für Inhalte</h2>
+          <p>Als Diensteanbieter bin ich für eigene Inhalte auf diesen Seiten nach den allgemeinen Gesetzen verantwortlich. Ich bin jedoch nicht verpflichtet, übermittelte oder gespeicherte fremde Informationen zu überwachen oder nach Umständen zu forschen, die auf eine rechtswidrige Tätigkeit hinweisen.</p>
+          <p>Verpflichtungen zur Entfernung oder Sperrung der Nutzung von Informationen nach den allgemeinen Gesetzen bleiben hiervon unberührt. Eine diesbezügliche Haftung ist erst ab dem Zeitpunkt der Kenntnis einer konkreten Rechtsverletzung möglich. Bei Bekanntwerden entsprechender Rechtsverletzungen werde ich diese Inhalte umgehend entfernen.</p>
+        </section>
+        <section id="haftung-links" class="reveal">
+          <h2>Haftung für Links</h2>
+          <p>Diese Website enthält Links zu externen Websites Dritter, auf deren Inhalte ich keinen Einfluss habe. Für die Inhalte der verlinkten Seiten ist stets der jeweilige Anbieter oder Betreiber verantwortlich. Die verlinkten Seiten wurden zum Zeitpunkt der Verlinkung auf mögliche Rechtsverstöße überprüft; rechtswidrige Inhalte waren nicht erkennbar.</p>
+          <p>Eine permanente inhaltliche Kontrolle der verlinkten Seiten ist ohne konkrete Anhaltspunkte einer Rechtsverletzung nicht zumutbar. Bei Bekanntwerden von Rechtsverletzungen werde ich derartige Links umgehend entfernen.</p>
+        </section>
+        <section id="urheberrecht" class="reveal">
+          <h2>Urheberrecht</h2>
+          <p>Die auf dieser Website erstellten Inhalte und Werke unterliegen dem deutschen Urheberrecht. Vervielfältigung, Bearbeitung, Verbreitung und jede Art der Verwertung außerhalb der Grenzen des Urheberrechts bedürfen der schriftlichen Zustimmung des jeweiligen Autors bzw. Erstellers.</p>
+          <p>Soweit Inhalte auf dieser Seite nicht von mir erstellt wurden, werden die Urheberrechte Dritter beachtet. Die gezeigten Projekt-Screenshots werden mit Zustimmung der jeweiligen Kunden verwendet. Sollten Sie trotzdem auf eine Urheberrechtsverletzung aufmerksam werden, bitte ich um einen entsprechenden Hinweis.</p>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <span>© <span id="year">2026</span> Julius Webdesign</span>
+      <nav aria-label="Rechtliches">
+        <a href="index.html">Startseite</a>
+        <a href="impressum.html" aria-current="page">Impressum</a>
+        <a href="datenschutz.html">Datenschutz</a>
+      </nav>
+    </div>
+  </footer>
+
+  <script>
+  (function () {
+    'use strict';
+    // Einblenden beim Scrollen
+    var els = document.querySelectorAll('.reveal');
+    if ('IntersectionObserver' in window) {
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('is-visible'); io.unobserve(e.target); } });
+      }, { threshold: 0.1 });
+      els.forEach(function (el) { io.observe(el); });
+      // Aktiven Abschnitt im Inhaltsverzeichnis markieren
+      var links = document.querySelectorAll('.toc a');
+      var spy = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (!e.isIntersecting) return;
+          links.forEach(function (a) { a.classList.toggle('is-active', a.getAttribute('href') === '#' + e.target.id); });
+        });
+      }, { rootMargin: '-30% 0px -60% 0px' });
+      document.querySelectorAll('.prose section[id]').forEach(function (s) { spy.observe(s); });
+    } else {
+      els.forEach(function (el) { el.classList.add('is-visible'); });
+    }
+    document.getElementById('year').textContent = new Date().getFullYear();
+  })();
+  </script>
+</body>
+</html>

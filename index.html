@@ -7,12 +7,14 @@
   <meta name="description" content="Moderne, schnelle Websites für kleine und lokale Unternehmen in Norden, Ostfriesland und ganz Deutschland. Persönliche Betreuung von der ersten Idee bis zum Launch." />
   <meta name="theme-color" content="#0b0c0f" />
 
-  <!-- Font: nur Inter in 2 Schnitten (400/600), per preconnect + display=swap performance-optimiert -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+  <!-- Font: Inter (400/600) lokal gehostet – schnell & DSGVO-konform (keine Verbindung zu Google) -->
+  <link rel="preload" href="assets/fonts/inter-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="assets/fonts/inter-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin />
 
   <style>
+    @font-face { font-family: "Inter"; font-style: normal; font-weight: 400; font-display: swap; src: url("assets/fonts/inter-latin-400-normal.woff2") format("woff2"); }
+    @font-face { font-family: "Inter"; font-style: normal; font-weight: 600; font-display: swap; src: url("assets/fonts/inter-latin-600-normal.woff2") format("woff2"); }
+
     /* =========================================================
        DESIGN TOKENS – hier Farben, Abstände & Radien anpassen
        ========================================================= */
@@ -88,15 +90,9 @@
     .container { width: 100%; max-width: var(--container); margin-inline: auto; padding-inline: var(--gutter); }
     .section { padding-block: var(--section-y); position: relative; }
 
-    .eyebrow {
-      display: inline-flex; align-items: center; gap: var(--space-xs);
-      font-size: 0.8rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase;
-      color: var(--accent);
-    }
-    .eyebrow::before { content: ""; width: 18px; height: 1px; background: currentColor; opacity: 0.7; }
 
     .section-head { max-width: 680px; margin-bottom: var(--space-2xl); }
-    .section-head h2 { font-size: var(--fs-h2); margin-top: var(--space-md); }
+    .section-head h2 { font-size: var(--fs-h2); }
     .section-head p { color: var(--text-muted); font-size: var(--fs-lead); margin-top: var(--space-md); }
 
     /* Logo (inline SVG, Farbe über currentColor steuerbar) */
@@ -400,7 +396,7 @@
     }
     .about__tag strong { display: block; font-weight: 600; }
     .about__tag span { color: var(--text-muted); }
-    .about__text h2 { font-size: var(--fs-h2); margin-top: var(--space-md); }
+    .about__text h2 { font-size: var(--fs-h2); }
     .about__text p { color: var(--text-muted); font-size: 1.05rem; margin-top: var(--space-lg); }
     .about__text p strong { color: var(--text); font-weight: 600; }
 
@@ -540,7 +536,7 @@
        ========================================================= */
     .contact { display: grid; gap: var(--space-2xl); }
     @media (min-width: 960px) { .contact { grid-template-columns: 0.85fr 1.15fr; gap: 5rem; } }
-    .contact__info h2 { font-size: var(--fs-h2); margin-top: var(--space-md); }
+    .contact__info h2 { font-size: var(--fs-h2); }
     .contact__info > p { color: var(--text-muted); font-size: var(--fs-lead); margin-top: var(--space-md); }
     .contact__list { list-style: none; padding: 0; margin: var(--space-xl) 0 0; display: grid; gap: var(--space-md); }
     .contact__list a, .contact__list div { display: flex; align-items: center; gap: var(--space-md); color: var(--text); }
@@ -751,7 +747,6 @@
     <section class="section" id="leistungen" aria-labelledby="leistungen-title">
       <div class="container">
         <div class="section-head">
-          <span class="eyebrow reveal">Leistungen</span>
           <h2 id="leistungen-title" data-split="mask">Alles, was Ihr Auftritt im Netz braucht.</h2>
           <p class="reveal">Keine Baukasten-Lösung, sondern eine Website, die zu Ihnen passt – durchdacht, schnell und einfach zu pflegen.</p>
         </div>
@@ -816,7 +811,6 @@
           </div>
 
           <div class="about__text">
-            <span class="eyebrow reveal">Über mich</span>
             <h2 id="about-title" data-split="mask">Persönlich, direkt und mit Blick für Ihr Business.</h2>
             <p class="reveal">
               Ich bin Marvin – Webdesigner aus Norden mit kaufmännischem Hintergrund. Deshalb denke ich bei jeder Website nicht nur an Optik, sondern an das, was am Ende zählt: <strong>mehr Anfragen, mehr Kunden, mehr Vertrauen.</strong>
@@ -876,7 +870,6 @@
     <section id="referenzen" aria-labelledby="ref-title">
       <div class="container" style="padding-top: var(--section-y)">
         <div class="section-head" style="margin-bottom: 0">
-          <span class="eyebrow reveal">Referenzen</span>
           <h2 id="ref-title" data-split="mask">Ausgewählte Projekte.</h2>
           <p class="reveal">Scrollen Sie weiter – und sehen Sie sich an, was ich zuletzt umgesetzt habe.</p>
         </div>
@@ -893,7 +886,7 @@
             </div>
             <div class="device__screen" id="deviceScreen">
               <div class="device__page" id="devicePage">
-                <img src="assets/svarle.jpg" alt="Screenshot der Website svarle.com" onerror="this.remove()" />
+                <img src="assets/svarle.jpg" alt="Screenshot der Website des SV Arle-Westerende (svarle.com)" onerror="this.remove()" />
                 <!-- Fallback-Mockup (wird nur angezeigt, wenn kein Screenshot vorhanden ist) -->
                 <div class="mock-page" aria-hidden="true">
                   <div class="mock-page__nav">svarle <span><em>Start</em><em>Angebot</em><em>Über uns</em><em>Kontakt</em></span></div>
@@ -909,9 +902,9 @@
           </div>
           <div class="showcase__caption" id="showcaseCaption">
             <div>
-              <h3>svarle.com</h3>
-              <p>Konzept, Design und Entwicklung der kompletten Website.</p>
-              <div class="tags"><span class="tag">Website</span><span class="tag">Design</span><span class="tag">Entwicklung</span></div>
+              <h3>SV Arle-Westerende</h3>
+              <p>Neue Website für den Fußballverein aus Arle – mit News, Mannschaften, Terminen und Sponsoren.</p>
+              <div class="tags"><span class="tag">Website</span><span class="tag">Sportverein</span><span class="tag">Design &amp; Entwicklung</span></div>
             </div>
             <a href="https://svarle.com" class="btn btn--ghost" target="_blank" rel="noopener" data-magnetic>
               Website besuchen
@@ -939,7 +932,6 @@
     <section class="section process" aria-labelledby="process-title">
       <div class="container">
         <div class="section-head">
-          <span class="eyebrow reveal">Ablauf</span>
           <h2 id="process-title" data-split="mask">In vier Schritten zur neuen Website.</h2>
           <p class="reveal">Klar strukturiert und ohne Überraschungen – Sie wissen jederzeit, wo Ihr Projekt steht.</p>
         </div>
@@ -991,7 +983,6 @@
       <div class="container">
         <div class="contact">
           <div class="contact__info">
-            <span class="eyebrow reveal">Kontakt</span>
             <h2 id="contact-title" data-split="mask">Lassen Sie uns über Ihr Projekt sprechen.</h2>
             <p class="reveal">Erzählen Sie mir kurz von Ihrem Vorhaben. Ich melde mich innerhalb von 24 Stunden – unverbindlich und kostenlos.</p>
 
@@ -1003,10 +994,9 @@
                 </a>
               </li>
               <li class="reveal">
-                <!-- E-MAIL-PLATZHALTER: Adresse anpassen -->
-                <a href="mailto:hallo@julius-webdesign.de">
+                <a href="mailto:management.marvn@gmail.com">
                   <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg></span>
-                  <span><small>E-Mail</small>hallo@julius-webdesign.de</span>
+                  <span><small>E-Mail</small>management.marvn@gmail.com</span>
                 </a>
               </li>
               <li class="reveal">
@@ -1062,7 +1052,7 @@
             </div>
             <label class="form__consent">
               <input type="checkbox" name="consent" required />
-              <span>Ich bin damit einverstanden, dass meine Angaben zur Bearbeitung meiner Anfrage verwendet werden. Mehr in der <a href="#">Datenschutzerklärung</a>.</span>
+              <span>Ich bin damit einverstanden, dass meine Angaben zur Bearbeitung meiner Anfrage verwendet werden. Mehr in der <a href="datenschutz.html">Datenschutzerklärung</a>.</span>
             </label>
             <div class="form__footer">
               <span class="form__note">* Pflichtfelder</span>
@@ -1111,7 +1101,7 @@
           <h4>Kontakt</h4>
           <ul>
             <li><a href="tel:+491621853738">0162 1853738</a></li>
-            <li><a href="mailto:hallo@julius-webdesign.de">hallo@julius-webdesign.de</a></li>
+            <li><a href="mailto:management.marvn@gmail.com">management.marvn@gmail.com</a></li>
             <li><span>26506 Norden</span></li>
           </ul>
         </div>
@@ -1125,8 +1115,8 @@
       <div class="footer__bottom">
         <span>© <span id="year">2026</span> Julius Webdesign. Alle Rechte vorbehalten.</span>
         <nav aria-label="Rechtliches">
-          <a href="#">Impressum</a>
-          <a href="#">Datenschutz</a>
+          <a href="impressum.html">Impressum</a>
+          <a href="datenschutz.html">Datenschutz</a>
         </nav>
       </div>
     </div>
